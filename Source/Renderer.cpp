@@ -2,9 +2,9 @@
 #include "helpers/GeometricMesh.h"
 #include "helpers/Tools.h"
 #include "helpers/ShaderProgram.h"
+#include "helpers/OBJLoader.h"
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "helpers/OBJLoader.h"
 #include <iostream>
 #include <algorithm>
 #include <array>
@@ -249,8 +249,9 @@ void Renderer::Render()
 
 			for (int j = 0; j < node->parts.size(); ++j)
 			{
-				glm::vec3 diffuse = node->parts[j].diffuseColor;
 
+				glm::vec3 diffuse = node->parts[j].diffuseColor;
+		
 				glUniform3f(m_geometry_rendering_program["uniform_diffuse"],
 					diffuse.x, diffuse.y, diffuse.z);
 

@@ -166,6 +166,7 @@ copy "$(SolutionDir)3rd party\bin\*.dll" "$(OutDir)"</Command>
   <ItemGroup>
     <ClCompile Include="Source\helpers\GeometricMesh.cpp" />
     <ClCompile Include="Source\helpers\GeometryNode.cpp" />
+    <ClCompile Include="Source\helpers\TextureManager.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\helpers\OBJLoader.cpp" />
     <ClCompile Include="Source\Renderer.cpp" />
@@ -176,6 +177,7 @@ copy "$(SolutionDir)3rd party\bin\*.dll" "$(OutDir)"</Command>
     <ClInclude Include="Source\helpers\GeometricMesh.h" />
     <ClInclude Include="Source\helpers\GeometryNode.h" />
     <ClInclude Include="Source\helpers\OBJLoader.h" />
+    <ClInclude Include="Source\helpers\TextureManager.h" />
     <ClInclude Include="Source\Renderer.h" />
     <ClInclude Include="Source\helpers\ShaderProgram.h" />
     <ClInclude Include="Source\helpers\Tools.h" />
