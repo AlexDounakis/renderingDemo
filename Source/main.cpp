@@ -8,7 +8,7 @@
 using namespace std;
 
 //Screen attributes
-SDL_Window * window;
+SDL_Window* window;
 
 //OpenGL context 
 SDL_GLContext gContext;
@@ -18,7 +18,7 @@ const int SCREEN_HEIGHT = 860;
 //Event handler
 SDL_Event event;
 
-Renderer * renderer = nullptr;
+Renderer* renderer = nullptr;
 
 void clean_up()
 {
@@ -86,7 +86,7 @@ bool init()
 	return engine_initialized;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
 	//Initialize SDL, glew, engine
 	if (init() == false)
@@ -116,6 +116,7 @@ int main(int argc, char *argv[])
 			{
 				// Key down events
 				if (event.key.keysym.sym == SDLK_ESCAPE) quit = true;
+				else if (event.key.keysym.sym == SDLK_r) renderer->ReloadShaders();
 				else if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_UP)
 				{
 					renderer->CameraMoveForward(true);
@@ -174,6 +175,13 @@ int main(int argc, char *argv[])
 					prev_mouse_position = glm::vec2(x, y);
 				}
 			}
+			else if (event.type == SDL_WINDOWEVENT)
+			{
+				if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+				{
+					renderer->ResizeBuffers(event.window.data1, event.window.data2);
+				}
+			}
 		}
 
 		// Compute the ellapsed time
@@ -189,7 +197,7 @@ int main(int argc, char *argv[])
 
 		// Draw
 		renderer->Render();
-		
+
 		//Update screen (swap buffer for double buffering)
 		SDL_GL_SwapWindow(window);
 	}

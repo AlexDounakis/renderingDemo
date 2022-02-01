@@ -9,54 +9,68 @@
 
 class Renderer
 {
-public:
-	// Empty
+	public:
+		// Empty
 
-protected:
-	int												m_screen_width, m_screen_height;
-	glm::mat4										m_world_matrix;
-	glm::mat4										m_view_matrix;
-	glm::mat4										m_projection_matrix;
-	glm::vec3										m_camera_position;
-	glm::vec3										m_camera_target_position;
-	glm::vec3										m_camera_up_vector;
-	glm::vec2										m_camera_movement;
-	glm::vec2										m_camera_look_angle_destination;
+	protected:
+		int												m_screen_width, m_screen_height;
+		glm::mat4										m_world_matrix;
+		glm::mat4										m_view_matrix;
+		glm::mat4										m_projection_matrix;
+		glm::vec3										m_camera_position;
+		glm::vec3										m_camera_target_position;
+		glm::vec3										m_camera_up_vector;
+		glm::vec2										m_camera_movement;
+		glm::vec2										m_camera_look_angle_destination;
 	
-	float											m_continous_time;
+		float											m_continous_time;
+		std::vector<GeometryNode*>						m_nodes;
 
-	enum OBJECS { TERRAIN = 0, CRAFT };
+		ShaderProgram									m_geometry_rendering_program;
+		ShaderProgram									m_post_rendering_program;
 
-	std::vector<GeometryNode*>						m_nodes;
-	ShaderProgram									m_geometry_rendering_program;
+		enum OBJECS										{ TERRAIN, CRAFT };
 
-	// Protected Functions
-													// init functions
-	bool											InitShaders();
-	bool											InitGeometricMeshes();
-	void											BuildWorld();
-	void											InitCamera();
-													// render functions
-	void											RenderGeometry();
+		GLuint											m_fbo;
+		GLuint											m_fbo_texture;
+		GLuint											m_fbo_depth_texture;
+		GLuint											m_vao_fbo;
+		GLuint											m_vbo_fbo_vertices;
 
-public:
+		// Protected Functions
+														//'init' functions
+		bool											InitShaders();
+		bool											InitGeometricMeshes();
+		bool											InitCommonItems();
+		bool											InitIntermediateBuffers();
+		void											BuildWorld();
+		void											InitCamera();
 
-	Renderer();
-	~Renderer();
-													// basic functions
-	bool											Init(int SCREEN_WIDTH, int SCREEN_HEIGHT);
-	void											Update(float dt);
-	void											Render();
-													// update functions
-	void											UpdateGeometry(float dt);
-	void											UpdateCamera(float dt);
+														//'update' functions
+		void											UpdateGeometry(float dt);
+		void											UpdateCamera(float dt);
 
-													// camera functions
-	void											CameraMoveForward(bool enable);
-	void											CameraMoveBackWard(bool enable);
-	void											CameraMoveLeft(bool enable);
-	void											CameraMoveRight(bool enable);
-	void											CameraLook(glm::vec2 lookDir);
-};
+														//'render' function
+		void											RenderGeometry();
 
-#endif
+	public:
+
+		Renderer();
+		~Renderer();
+													//basic functions
+		bool										Init(int SCREEN_WIDTH, int SCREEN_HEIGHT);
+		void										Update(float dt);
+		void										Render();
+
+													//camera functions
+		void										CameraMoveForward(bool enable);
+		void										CameraMoveBackWard(bool enable);
+		void										CameraMoveLeft(bool enable);
+		void										CameraMoveRight(bool enable);
+		void										CameraLook(glm::vec2 lookDir);
+
+		bool										ResizeBuffers(int SCREEN_WIDTH, int SCREEN_HEIGHT);
+		bool										ReloadShaders();
+	};
+
+	#endif

@@ -12,7 +12,7 @@ newmtl CraftMAT
 	Kd 1.0000 1.0000 1.0000
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Kd craft_BaseMap.png
-	map_Ks craft_MaskMap.png
-	map_bump craft_Normal.png
-	bump craft_Normal.png
+	map_Kd map\craft_BaseMap.png
+	map_Ks map\craft_MaskMap.png
+	map_bump map\craft_Normal.png
+	bump map\craft_Normal.png
