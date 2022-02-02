@@ -18,7 +18,12 @@ Renderer::Renderer()
 
 Renderer::~Renderer()
 {
-	// empty
+	glDeleteTextures(1, &m_fbo_texture);
+	glDeleteFramebuffers(1, &m_fbo);
+
+	glDeleteVertexArrays(1, &m_vao_fbo);
+	glDeleteBuffers(1, &m_vbo_fbo_vertices);
+
 }
 
 // INIT
@@ -61,6 +66,9 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 		this->m_geometry_rendering_program.CreateProgram();
 		this->m_geometry_rendering_program.LoadUniform("uniform_projection_matrix");
 		this->m_geometry_rendering_program.LoadUniform("uniform_normal_matrix");
+		this->m_geometry_rendering_program.LoadUniform("uniform_diffuse");
+		this->m_geometry_rendering_program.LoadUniform("uniform_has_texture");
+		this->m_geometry_rendering_program.LoadUniform("uniform_texture");
 
 		vertex_shader_path = "Assets/Shaders/post_process.vert";
 		fragment_shader_path = "Assets/Shaders/post_process.frag";
@@ -212,11 +220,13 @@ void Renderer::Render()
 	RenderGeometry();
 
 	GLenum error = Tools::CheckGLError();
+
 	if (error != GL_NO_ERROR)
 	{
 		printf("Reanderer:Draw GL Error\n");
 		system("pause");
 	}
+
 }
 
 	void Renderer::RenderGeometry()
@@ -249,9 +259,8 @@ void Renderer::Render()
 
 			for (int j = 0; j < node->parts.size(); ++j)
 			{
-
 				glm::vec3 diffuse = node->parts[j].diffuseColor;
-		
+
 				glUniform3f(m_geometry_rendering_program["uniform_diffuse"],
 					diffuse.x, diffuse.y, diffuse.z);
 
@@ -287,7 +296,6 @@ void Renderer::Render()
 		glBindVertexArray(0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		m_post_rendering_program.Unbind();
-
 	}
 
 // CAMERA

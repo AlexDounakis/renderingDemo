@@ -18,6 +18,25 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\helpers\GeometricMesh.h" />
+    <ClInclude Include="Source\helpers\GeometryNode.h" />
+    <ClInclude Include="Source\helpers\OBJLoader.h" />
+    <ClInclude Include="Source\helpers\ShaderProgram.h" />
+    <ClInclude Include="Source\helpers\TextureManager.h" />
+    <ClInclude Include="Source\helpers\Tools.h" />
+    <ClInclude Include="Source\Renderer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\helpers\GeometricMesh.cpp" />
+    <ClCompile Include="Source\helpers\GeometryNode.cpp" />
+    <ClCompile Include="Source\helpers\OBJLoader.cpp" />
+    <ClCompile Include="Source\helpers\ShaderProgram.cpp" />
+    <ClCompile Include="Source\helpers\TextureManager.cpp" />
+    <ClCompile Include="Source\helpers\Tools.cpp" />
+    <ClCompile Include="Source\main.cpp" />
+    <ClCompile Include="Source\Renderer.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -163,35 +182,6 @@ copy "$(SolutionDir)3rd party\bin\*.dll" "$(OutDir)"</Command>
 copy "$(SolutionDir)3rd party\bin\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Source\helpers\GeometricMesh.cpp" />
-    <ClCompile Include="Source\helpers\GeometryNode.cpp" />
-    <ClCompile Include="Source\helpers\TextureManager.cpp" />
-    <ClCompile Include="Source\main.cpp" />
-    <ClCompile Include="Source\helpers\OBJLoader.cpp" />
-    <ClCompile Include="Source\Renderer.cpp" />
-    <ClCompile Include="Source\helpers\ShaderProgram.cpp" />
-    <ClCompile Include="Source\helpers\Tools.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Source\helpers\GeometricMesh.h" />
-    <ClInclude Include="Source\helpers\GeometryNode.h" />
-    <ClInclude Include="Source\helpers\OBJLoader.h" />
-    <ClInclude Include="Source\helpers\TextureManager.h" />
-    <ClInclude Include="Source\Renderer.h" />
-    <ClInclude Include="Source\helpers\ShaderProgram.h" />
-    <ClInclude Include="Source\helpers\Tools.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\Shaders\basic_rendering.frag">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </None>
-    <None Include="Assets\Shaders\basic_rendering.vert">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </None>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
