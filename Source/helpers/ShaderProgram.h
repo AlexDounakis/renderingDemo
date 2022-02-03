@@ -1,10 +1,11 @@
+#ifndef SHADER_PROGRAM_H
+#define SHADER_PROGRAM_H
+
 #include <string>
 #include <vector>
 #include <unordered_map>
 #include "GLEW\glew.h"
-
-#ifndef SHADER_PROGRAM_H
-#define SHADER_PROGRAM_H
+#include "glm/gtc/type_ptr.hpp"
 
 class ShaderProgram
 {
@@ -33,12 +34,17 @@ public:
 	// Delete and reload shaders
 	bool ReloadProgram();
 
+	void loadVec3(const std::string& pKey, const glm::vec3& pValue);
+	void loadInt(const std::string& pKey, const int pValue);
+	void loadMat4(const std::string& pKey, const glm::mat4& pValue);
+	void loadFloat(const std::string& pKey, const float pValue);
+
 	// Bind the program to use
 	void Bind();
 	// Unbind the program
 	void Unbind();
 	// Load the index of the uniform
-	void LoadUniform(const std::string uniform);
+	GLenum LoadUniform(const std::string uniform);
 
 	// Access the index of the uniform
 	GLint operator[](const std::string key);

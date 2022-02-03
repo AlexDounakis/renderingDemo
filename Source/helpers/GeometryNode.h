@@ -24,9 +24,14 @@ public:
 
 	struct Objects
 	{
+		glm::vec3 diffuse;
+		glm::vec3 specular;
+		glm::vec3 ambient;
+
 		unsigned int start_offset;
 		unsigned int count;
-		glm::vec3 diffuseColor;
+
+		float shininess;
 		GLuint textureID;
 	};
 

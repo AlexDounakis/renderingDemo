@@ -87,7 +87,11 @@ void GeometryNode::Init(GeometricMesh* mesh)
 
 		auto material = mesh->materials[mesh->objects[i].material_id];
 
-		part.diffuseColor = glm::vec4(material.diffuse[0], material.diffuse[1], material.diffuse[2], 1.0);
+		part.diffuse = glm::vec3(material.diffuse[0], material.diffuse[1], material.diffuse[2]);
+		part.specular = glm::vec3(material.specular[0], material.specular[1], material.specular[2]);
+		part.ambient = glm::vec3(material.ambient[0], material.ambient[1], material.ambient[2]);
+		part.shininess = material.shininess;
+
 		part.textureID = (material.texture.empty()) ? 0 : TextureManager::GetInstance().RequestTexture(material.texture.c_str());
 
 		parts.push_back(part);
@@ -167,7 +171,7 @@ void GeometryNode::Init(
 	part.start_offset = 0;
 	part.count = vertices.size();
 
-	part.diffuseColor = glm::vec4(1.0);
+	part.diffuse = glm::vec4(1.0);
 	part.textureID = TextureManager::GetInstance().RequestTexture(texFile.c_str(), pUseMipMap);
 
 	parts.push_back(part);

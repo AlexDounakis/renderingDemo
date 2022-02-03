@@ -36,6 +36,8 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 
 	bool meshes_initialization = InitGeometricMeshes();
 
+	bool light_initialization = InitLights();
+
 	this->BuildWorld();
 
 	bool common_initialization = InitCommonItems();
@@ -108,6 +110,18 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 		}
 
 		return initialized;
+	}
+
+	// init the light
+	bool Renderer::InitLights()
+	{
+		//this->m_light.SetColor(glm::vec3(0.5f));
+		this->m_light.SetColor(glm::vec3(1000.f));
+		this->m_light.SetPosition(glm::vec3(0, 30, 0));
+		this->m_light.SetTarget(glm::vec3(0));
+		this->m_light.SetConeSize(30, 40);
+
+		return true;
 	}
 
 	// transformate the world
@@ -212,6 +226,10 @@ void Renderer::Update(float dt)
 		m_camera_target_position = m_camera_position + direction * glm::distance(m_camera_position, m_camera_target_position);
 
 		m_view_matrix = glm::lookAt(m_camera_position, m_camera_target_position, m_camera_up_vector);
+
+		// if i want the light follow the camera
+		//m_light.SetPosition(m_camera_position);
+		//m_light.SetTarget(m_camera_target_position);
 	}
 
 // RENDER
@@ -245,33 +263,42 @@ void Renderer::Render()
 
 		glm::mat4 proj = m_projection_matrix * m_view_matrix * m_world_matrix;
 
+		m_geometry_rendering_program.loadVec3("uniform_light_color", m_light.GetColor());
+		m_geometry_rendering_program.loadVec3("uniform_light_dir", m_light.GetDirection());
+		m_geometry_rendering_program.loadVec3("uniform_light_pos", m_light.GetPosition());
+
+		m_geometry_rendering_program.loadFloat("uniform_light_umbra", m_light.GetUmbra());
+		m_geometry_rendering_program.loadFloat("uniform_light_penumbra", m_light.GetPenumbra());
+
+		m_geometry_rendering_program.loadVec3("uniform_camera_pos", m_camera_position);
+		m_geometry_rendering_program.loadVec3("uniform_camera_dir", normalize(m_camera_target_position - m_camera_position));\
+
 		for (auto& node : this->m_nodes)
 		{
 			glBindVertexArray(node->m_vao);
 
-			glUniformMatrix4fv(m_geometry_rendering_program["uniform_projection_matrix"], 1, GL_FALSE,
-				glm::value_ptr(proj * node->app_model_matrix));
+			glUniformMatrix4fv(m_geometry_rendering_program["uniform_projection_matrix"], 1, GL_FALSE, glm::value_ptr(proj * node->app_model_matrix));
 
 			glm::mat4 normal_matrix = glm::transpose(glm::inverse(m_world_matrix * node->app_model_matrix));
-
-			glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE,
-				glm::value_ptr(normal_matrix));
+			glUniformMatrix4fv(m_geometry_rendering_program["uniform_normal_matrix"], 1, GL_FALSE, glm::value_ptr(normal_matrix));
+			
+			m_geometry_rendering_program.loadMat4("uniform_world_matrix", m_world_matrix * node->app_model_matrix);
 
 			for (int j = 0; j < node->parts.size(); ++j)
 			{
-				glm::vec3 diffuse = node->parts[j].diffuseColor;
 
-				glUniform3f(m_geometry_rendering_program["uniform_diffuse"],
-					diffuse.x, diffuse.y, diffuse.z);
-
-				glUniform1i(m_geometry_rendering_program["uniform_has_texture"],
-					(node->parts[j].textureID > 0) ? 1 : 0);
+				m_geometry_rendering_program.loadVec3("uniform_diffuse", node->parts[j].diffuse);
+				m_geometry_rendering_program.loadVec3("uniform_ambient", node->parts[j].ambient);
+				m_geometry_rendering_program.loadVec3("uniform_specular", node->parts[j].specular);
+				m_geometry_rendering_program.loadFloat("uniform_shininess", node->parts[j].shininess);
+				m_geometry_rendering_program.loadInt("uniform_has_texture", (node->parts[j].textureID > 0) ? 1 : 0);	
 
 				glActiveTexture(GL_TEXTURE0);
 				glUniform1i(m_geometry_rendering_program["uniform_texture"], 0);
 				glBindTexture(GL_TEXTURE_2D, node->parts[j].textureID);
 
 				glDrawArrays(GL_TRIANGLES, node->parts[j].start_offset, node->parts[j].count);
+
 			}
 
 			glBindVertexArray(0);
