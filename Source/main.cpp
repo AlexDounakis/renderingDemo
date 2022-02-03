@@ -8,7 +8,7 @@
 using namespace std;
 
 //Screen attributes
-SDL_Window* window;
+SDL_Window * window;
 
 //OpenGL context 
 SDL_GLContext gContext;
@@ -18,7 +18,7 @@ const int SCREEN_HEIGHT = 860;
 //Event handler
 SDL_Event event;
 
-Renderer* renderer = nullptr;
+Renderer * renderer = nullptr;
 
 void clean_up()
 {
@@ -86,7 +86,7 @@ bool init()
 	return engine_initialized;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
 	//Initialize SDL, glew, engine
 	if (init() == false)
@@ -197,7 +197,7 @@ int main(int argc, char* argv[])
 
 		// Draw
 		renderer->Render();
-
+		
 		//Update screen (swap buffer for double buffering)
 		SDL_GL_SwapWindow(window);
 	}

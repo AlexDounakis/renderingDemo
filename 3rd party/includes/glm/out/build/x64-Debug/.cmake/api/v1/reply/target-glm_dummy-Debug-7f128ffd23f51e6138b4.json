@@ -2,10 +2,10 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "glm_dummy.exe"
+			"path" : "======glm_dummy.exe"
 		},
 		{
-			"path" : "glm_dummy.pdb"
+			"path" : "======glm_dummy.pdb"
 		}
 	],
 	"backtrace" : 1,
@@ -84,7 +84,7 @@
 		"language" : "CXX"
 	},
 	"name" : "glm_dummy",
-	"nameOnDisk" : "glm_dummy.exe",
+	"nameOnDisk" : "======glm_dummy.exe",
 	"paths" : 
 	{
 		"build" : ".",

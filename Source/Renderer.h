@@ -6,6 +6,7 @@
 #include <vector>
 #include "helpers/ShaderProgram.h"
 #include "helpers/GeometryNode.h"
+#include "helpers/LightNode.h"
 
 class Renderer
 {
@@ -26,6 +27,7 @@ class Renderer
 		float											m_continous_time;
 		std::vector<GeometryNode*>						m_nodes;
 
+		LightNode										m_light;
 		ShaderProgram									m_geometry_rendering_program;
 		ShaderProgram									m_post_rendering_program;
 
@@ -41,6 +43,7 @@ class Renderer
 														//'init' functions
 		bool											InitShaders();
 		bool											InitGeometricMeshes();
+		bool											InitLights();
 		bool											InitCommonItems();
 		bool											InitIntermediateBuffers();
 		void											BuildWorld();
