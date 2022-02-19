@@ -145,3 +145,4 @@ glm::mat4 LightNode::GetViewMatrix()
 {
 	return m_view_matrix;
 }
+
