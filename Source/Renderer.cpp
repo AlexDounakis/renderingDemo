@@ -3,8 +3,10 @@
 #include "helpers/Tools.h"
 #include "helpers/ShaderProgram.h"
 #include "helpers/OBJLoader.h"
+
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+
 #include <iostream>
 #include <algorithm>
 #include <array>
@@ -38,8 +40,6 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 
 	bool light_initialization = InitLights();
 
-	this->BuildWorld();
-
 	bool common_initialization = InitCommonItems();
 	bool inter_buffers_initialization = InitIntermediateBuffers();
 
@@ -49,7 +49,7 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 		printf("Exiting with error at Renderer::Init\n");
 		return false;
 	}
-
+	this->BuildWorld();
 	this->InitCamera();
 
 	//If everything initialized
@@ -79,6 +79,14 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 		this->m_post_rendering_program.LoadFragmentShaderFromFile(fragment_shader_path.c_str());
 		this->m_post_rendering_program.CreateProgram();
 		this->m_post_rendering_program.LoadUniform("uniform_texture");
+
+		vertex_shader_path = "Assets/Shaders/shadow_map_rendering.vert";
+		fragment_shader_path = "Assets/Shaders/shadow_map_rendering.frag";
+
+		/*this->m_spot_light_shadow_map_program.LoadVertexShaderFromFile(vertex_shader_path.c_str());
+		this->m_spot_light_shadow_map_program.LoadFragmentShaderFromFile(fragment_shader_path.c_str());
+		this->m_spot_light_shadow_map_program.CreateProgram();*/
+
 
 		return true;
 	}
@@ -120,6 +128,7 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 		this->m_light.SetPosition(glm::vec3(0, 30, 0));
 		this->m_light.SetTarget(glm::vec3(0));
 		this->m_light.SetConeSize(30, 40);
+		this->m_light.CastShadow(false);
 
 		return true;
 	}
@@ -235,7 +244,9 @@ void Renderer::Update(float dt)
 // RENDER
 void Renderer::Render()
 {
+	//RenderShadowMaps();
 	RenderGeometry();
+	//RenderPostProcess();
 
 	GLenum error = Tools::CheckGLError();
 
@@ -271,7 +282,21 @@ void Renderer::Render()
 		m_geometry_rendering_program.loadFloat("uniform_light_penumbra", m_light.GetPenumbra());
 
 		m_geometry_rendering_program.loadVec3("uniform_camera_pos", m_camera_position);
-		m_geometry_rendering_program.loadVec3("uniform_camera_dir", normalize(m_camera_target_position - m_camera_position));\
+		m_geometry_rendering_program.loadVec3("uniform_camera_dir", normalize(m_camera_target_position - m_camera_position));
+
+		/*m_geometry_rendering_program.loadMat4("uniform_light_projection_view", m_light.GetProjectionMatrix() * m_light.GetViewMatrix());
+		m_geometry_rendering_program.loadInt("uniform_cast_shadows", m_light.GetCastShadowsStatus() ? 1 : 0);*/
+
+		//glActiveTexture(GL_TEXTURE2);
+		//m_geometry_rendering_program.loadInt("uniform_shadow_map", 2);
+		//glBindTexture(GL_TEXTURE_2D, m_light.GetShadowMapDepthTexture());
+
+		///*RenderStaticGeometry();
+		//RenderCollidableGeometry();*/
+
+		//m_geometry_rendering_program.Unbind();
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		//glDisable(GL_DEPTH_TEST);
 
 		for (auto& node : this->m_nodes)
 		{
@@ -324,6 +349,94 @@ void Renderer::Render()
 		glBindTexture(GL_TEXTURE_2D, 0);
 		m_post_rendering_program.Unbind();
 	}
+
+/// SHADOWMAPS
+
+void Renderer::RenderShadowMaps()
+{
+	if (m_light.GetCastShadowsStatus())
+	{
+		int m_depth_texture_resolution = m_light.GetShadowMapResolution();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, m_light.GetShadowMapFBO());
+		glViewport(0, 0, m_depth_texture_resolution, m_depth_texture_resolution);
+		glEnable(GL_DEPTH_TEST);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		// Bind the shadow mapping program
+		m_spot_light_shadow_map_program.Bind(); // !!!!
+
+		glm::mat4 proj = m_light.GetProjectionMatrix() * m_light.GetViewMatrix() * m_world_matrix;
+
+		for (auto& node : this->m_nodes)
+		{
+			glBindVertexArray(node->m_vao);
+
+			m_spot_light_shadow_map_program.loadMat4("uniform_projection_matrix", proj * node->app_model_matrix);
+
+			for (int j = 0; j < node->parts.size(); ++j)
+			{
+				glDrawArrays(GL_TRIANGLES, node->parts[j].start_offset, node->parts[j].count);
+			}
+
+			glBindVertexArray(0);
+		}
+
+		glm::vec3 camera_dir = normalize(m_camera_target_position - m_camera_position);
+		float_t isectT = 0.f;
+
+		// FOR COLLIDABLE NODES , WE DONT IMPLEMENT YET 
+
+		/*for (auto& node : this->m_collidables_nodes)
+		{
+			if (node->intersectRay(m_camera_position, camera_dir, m_world_matrix, isectT)) continue;
+
+			glBindVertexArray(node->m_vao);
+
+			m_spot_light_shadow_map_program.loadMat4("uniform_projection_matrix", proj * node->app_model_matrix);
+
+			for (int j = 0; j < node->parts.size(); ++j)
+			{
+				glDrawArrays(GL_TRIANGLES, node->parts[j].start_offset, node->parts[j].count);
+			}
+
+			glBindVertexArray(0);
+		}*/
+
+		m_spot_light_shadow_map_program.Unbind();
+		glDisable(GL_DEPTH_TEST);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		printf("RenderShadowMaps DONE\n");
+	}
+}
+
+void Renderer::RenderPostProcess()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(0.f, 0.8f, 1.f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDisable(GL_DEPTH_TEST);
+
+	m_post_rendering_program.Bind();
+
+	glBindVertexArray(m_vao_fbo);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_fbo_texture);
+	m_post_rendering_program.loadInt("uniform_texture", 0);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_light.GetShadowMapDepthTexture());
+	m_post_rendering_program.loadInt("uniform_shadow_map", 1);
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	m_post_rendering_program.Unbind();
+	printf("RenderPostProcess DONE\n");
+}
 
 // CAMERA
 void Renderer::CameraMoveForward(bool enable)

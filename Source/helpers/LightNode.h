@@ -16,7 +16,22 @@ class LightNode
 
 	float m_umbra;
 	float m_penumbra;
+
 	float m_spotlight_exponent;
+
+	/// <summary>
+	/// Shadow maps
+	/// </summary>
+	bool m_cast_shadow;
+	int m_shadow_map_resolution;
+	float m_shadow_map_bias;
+	GLuint m_shadow_map_texture;
+	GLuint m_shadow_map_fbo;
+	glm::mat4 m_projection_matrix;
+	glm::mat4 m_projection_inverse_matrix;
+	glm::mat4 m_view_matrix;
+	glm::mat4 m_view_inverse_matrix;
+
 
 public:	
 	LightNode();
@@ -35,6 +50,18 @@ public:
 	float GetUmbra();
 	float GetPenumbra();
 	float GetExponent();
+
+	//Shadow Maps
+	void CastShadow(bool enable);
+	bool GetCastShadowsStatus();
+	GLuint GetShadowMapFBO();
+	GLuint GetShadowMapDepthTexture();
+	int GetShadowMapResolution();
+
+	glm::mat4 GetProjectionMatrix();
+	glm::mat4 GetViewMatrix();
+
+
 };
 
 #endif

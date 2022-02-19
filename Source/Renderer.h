@@ -30,6 +30,7 @@ class Renderer
 		LightNode										m_light;
 		ShaderProgram									m_geometry_rendering_program;
 		ShaderProgram									m_post_rendering_program;
+		ShaderProgram									m_spot_light_shadow_map_program;
 
 		enum OBJECS										{ TERRAIN, CRAFT };
 
@@ -48,6 +49,8 @@ class Renderer
 		bool											InitIntermediateBuffers();
 		void											BuildWorld();
 		void											InitCamera();
+		void											RenderShadowMaps();
+		void											RenderPostProcess();
 
 														//'update' functions
 		void											UpdateGeometry(float dt);
