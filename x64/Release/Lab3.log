@@ -1,38 +1,50 @@
 ﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(513,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (Lab3.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  GeometricMesh.cpp
-  GeometryNode.cpp
-C:\Users\alex\source\repos\renderingDemo\Source\helpers\GeometryNode.cpp(172,30): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
-  LightNode.cpp
-  OBJLoader.cpp
-  ShaderProgram.cpp
-  TextureManager.cpp
-  Tools.cpp
-  main.cpp
   Renderer.cpp
-C:\Users\alex\source\repos\renderingDemo\Source\Renderer.cpp(229,15): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\alex\source\repos\renderingDemo\Source\Renderer.cpp(444,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\alex\source\repos\renderingDemo\Source\Renderer.cpp(272,15): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\alex\source\repos\renderingDemo\Source\Renderer.cpp(487,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\alex\source\repos\renderingDemo\Source\Renderer.cpp(449,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\alex\source\repos\renderingDemo\Source\Renderer.cpp(493,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\alex\source\repos\renderingDemo\Source\Renderer.cpp(454,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\alex\source\repos\renderingDemo\Source\Renderer.cpp(498,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\alex\source\repos\renderingDemo\Source\Renderer.cpp(459,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+C:\Users\alex\source\repos\renderingDemo\Source\Renderer.cpp(503,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\alex\source\repos\renderingDemo\Source\Renderer.cpp(515,24): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\alex\source\repos\renderingDemo\Source\Renderer.cpp(521,24): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\alex\source\repos\renderingDemo\Source\Renderer.cpp(526,24): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\alex\source\repos\renderingDemo\Source\Renderer.cpp(531,24): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
           with
           [
               T=float
           ]
   Generating code
-  Previous IPDB not found, fall back to full compilation.
-  All 1179 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  4 of 1178 functions ( 0.3%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    4 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   Lab3.vcxproj -> C:\Users\alex\Source\Repos\renderingDemo\x64\Release\renderingDemo.exe
   copy "C:\Users\alex\Source\Repos\renderingDemo\3rd party\bin\*.dll" "C:\Users\alex\Source\Repos\renderingDemo\x64\Release\"

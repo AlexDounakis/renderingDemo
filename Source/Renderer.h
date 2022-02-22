@@ -18,11 +18,24 @@ class Renderer
 		glm::mat4										m_world_matrix;
 		glm::mat4										m_view_matrix;
 		glm::mat4										m_projection_matrix;
+
 		glm::vec3										m_camera_position;
 		glm::vec3										m_camera_target_position;
 		glm::vec3										m_camera_up_vector;
 		glm::vec2										m_camera_movement;
 		glm::vec2										m_camera_look_angle_destination;
+
+		// Craft Movement 
+		glm::vec3										m_craft_position;
+		glm::vec3										m_craft_target_position;
+		glm::vec3										m_craft_facing;
+		glm::vec3										m_craft_right;
+		glm::vec3										m_craft_up;
+		glm::vec2										m_craft_movement;
+		glm::vec2										m_craft_look_angle_destination;
+
+
+
 	
 		float											m_continous_time;
 		std::vector<GeometryNode*>						m_nodes;
@@ -55,6 +68,8 @@ class Renderer
 														//'update' functions
 		void											UpdateGeometry(float dt);
 		void											UpdateCamera(float dt);
+		void											UpdateCraft(float dt);
+
 
 														//'render' function
 		void											RenderGeometry();
@@ -74,6 +89,14 @@ class Renderer
 		void										CameraMoveLeft(bool enable);
 		void										CameraMoveRight(bool enable);
 		void										CameraLook(glm::vec2 lookDir);
+
+													//craft functions
+		void										CraftMoveForward(bool enable);
+		void										CraftMoveBackward(bool enable);
+		void										CraftMoveLeft(bool enable);
+		void										CraftMoveRight(bool enable);
+		void										CraftLook(glm::vec2 lookDir);
+
 
 		bool										ResizeBuffers(int SCREEN_WIDTH, int SCREEN_HEIGHT);
 		bool										ReloadShaders();

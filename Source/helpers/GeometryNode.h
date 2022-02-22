@@ -51,6 +51,7 @@ public:
 
 	glm::mat4 model_matrix;
 	glm::mat4 app_model_matrix;
+
 	aabb m_aabb;
 };
 
