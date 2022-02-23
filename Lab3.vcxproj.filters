@@ -39,6 +39,12 @@
     <ClInclude Include="Source\helpers\LightNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Source\helpers\AssetManager.hpp">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\helpers\CollidableNode.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\main.cpp">
@@ -68,6 +74,12 @@
     <ClCompile Include="Source\helpers\LightNode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\helpers\AssetManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\helpers\CollidableNode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\basic_rendering.frag">
@@ -80,6 +92,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="Assets\Shaders\post_process.vert">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Assets\Shaders\shadow_map_rendering.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Assets\Shaders\shadow_map_rendering.vert">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

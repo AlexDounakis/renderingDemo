@@ -1,44 +1,18 @@
 ﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(510,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (Lab3.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  Renderer.cpp
-C:\Users\dinos\Desktop\renderingDemo\Source\Renderer.cpp(220,15): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\dinos\Desktop\renderingDemo\Source\Renderer.cpp(331,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\dinos\Desktop\renderingDemo\Source\Renderer.cpp(336,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\dinos\Desktop\renderingDemo\Source\Renderer.cpp(341,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\dinos\Desktop\renderingDemo\Source\Renderer.cpp(346,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-  GeometryNode.cpp
-C:\Users\dinos\Desktop\renderingDemo\Source\helpers\GeometryNode.cpp(172,30): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data
-  LightNode.cpp
-  ShaderProgram.cpp
-  main.cpp
+  AssetManager.cpp
+  CollidableNode.cpp
   Generating code
-  0 of 1136 functions ( 0.0%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    0 functions had inline decision re-evaluated but remain unchanged
+  Previous IPDB and IOBJ mismatch, fall back to full compilation.
+  All 1322 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
   Finished generating code
-  Lab3.vcxproj -> C:\Users\dinos\Desktop\renderingDemo\x64\Release\renderingDemo.exe
-  copy "C:\Users\dinos\Desktop\renderingDemo\3rd party\bin\*.dll" "C:\Users\dinos\Desktop\renderingDemo\x64\Release\"
-  C:\Users\dinos\Desktop\renderingDemo\3rd party\bin\glew32.dll
-  C:\Users\dinos\Desktop\renderingDemo\3rd party\bin\libjpeg-9.dll
-  C:\Users\dinos\Desktop\renderingDemo\3rd party\bin\libpng16-16.dll
-  C:\Users\dinos\Desktop\renderingDemo\3rd party\bin\libtiff-5.dll
-  C:\Users\dinos\Desktop\renderingDemo\3rd party\bin\libwebp-4.dll
-  C:\Users\dinos\Desktop\renderingDemo\3rd party\bin\SDL2.dll
-  C:\Users\dinos\Desktop\renderingDemo\3rd party\bin\SDL2_image.dll
-  C:\Users\dinos\Desktop\renderingDemo\3rd party\bin\zlib1.dll
+  Lab3.vcxproj -> C:\Users\kostas\Desktop\renderingDemo\x64\Release\renderingDemo.exe
+  copy "C:\Users\kostas\Desktop\renderingDemo\3rd party\bin\*.dll" "C:\Users\kostas\Desktop\renderingDemo\x64\Release\"
+  C:\Users\kostas\Desktop\renderingDemo\3rd party\bin\glew32.dll
+  C:\Users\kostas\Desktop\renderingDemo\3rd party\bin\libjpeg-9.dll
+  C:\Users\kostas\Desktop\renderingDemo\3rd party\bin\libpng16-16.dll
+  C:\Users\kostas\Desktop\renderingDemo\3rd party\bin\libtiff-5.dll
+  C:\Users\kostas\Desktop\renderingDemo\3rd party\bin\libwebp-4.dll
+  C:\Users\kostas\Desktop\renderingDemo\3rd party\bin\SDL2.dll
+  C:\Users\kostas\Desktop\renderingDemo\3rd party\bin\SDL2_image.dll
+  C:\Users\kostas\Desktop\renderingDemo\3rd party\bin\zlib1.dll
           8 file(s) copied.
