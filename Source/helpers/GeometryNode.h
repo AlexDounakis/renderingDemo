@@ -5,34 +5,31 @@
 #include "GLEW\glew.h"
 #include <unordered_map>
 #include "glm\gtx\hash.hpp"
-#include "TextureManager.h"
+#include "AssetManager.hpp"
 
 class GeometryNode
 {
 public:
 	GeometryNode();
-	~GeometryNode();
+	virtual ~GeometryNode();
 
-	void Init(class GeometricMesh* mesh);
-
-	void Init(
-		const std::vector<glm::vec3> & vertices,
-		const std::vector<glm::vec3>& normals,
-		const std::vector<glm::vec2>& texcoords,
-		const std::string & texFile,
-		bool pUseMipMap = false);
+	virtual void Init(const std::string & name, class GeometricMesh* mesh);
 
 	struct Objects
 	{
-		glm::vec3 diffuse;
-		glm::vec3 specular;
-		glm::vec3 ambient;
-
 		unsigned int start_offset;
 		unsigned int count;
 
+		glm::vec3 diffuse;
+		glm::vec3 ambient;
+		glm::vec3 specular;
+
 		float shininess;
-		GLuint textureID;
+		GLuint diffuse_textureID;
+		GLuint normal_textureID;
+		GLuint bump_textureID;
+		GLuint emissive_textureID;
+		GLuint mask_textureID;
 	};
 
 	struct aabb
@@ -44,14 +41,10 @@ public:
 
 	std::vector<Objects> parts;
 
-	GLuint m_vao;
-	GLuint m_vbo_positions;
-	GLuint m_vbo_normals;
-	GLuint m_vbo_texcoords;
-
 	glm::mat4 model_matrix;
 	glm::mat4 app_model_matrix;
 	aabb m_aabb;
+	GLuint m_vao;
 };
 
 #endif

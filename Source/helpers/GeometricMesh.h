@@ -23,8 +23,11 @@ public:
 		int material_id;
 		unsigned int start;
 		unsigned int end;
+
 		std::string name;
+
 	};
+
 	std::vector<MeshObject> objects;
 	std::vector<OBJMaterial> materials;
 	std::vector<glm::vec3> vertices;

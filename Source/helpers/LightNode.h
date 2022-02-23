@@ -16,7 +16,17 @@ class LightNode
 
 	float m_umbra;
 	float m_penumbra;
-	float m_spotlight_exponent;
+	
+	bool m_cast_shadow;
+	int m_shadow_map_resolution;
+	float m_shadow_map_bias;
+	GLuint m_shadow_map_texture;
+	GLuint m_shadow_map_fbo;
+
+	glm::mat4 m_projection_matrix;
+	glm::mat4 m_projection_inverse_matrix;
+	glm::mat4 m_view_matrix;
+	glm::mat4 m_view_inverse_matrix;
 
 public:	
 	LightNode();
@@ -26,7 +36,6 @@ public:
 	void SetColor(const glm::vec3 & color);
 	void SetTarget(const glm::vec3 & target);
 	void SetConeSize(float umbra, float penumbra);
-	void SetExponent(float value);
 
 	glm::vec3 GetPosition();
 	glm::vec3 GetDirection();
@@ -34,7 +43,15 @@ public:
 
 	float GetUmbra();
 	float GetPenumbra();
-	float GetExponent();
+
+	void CastShadow(bool enable);
+	bool GetCastShadowsStatus();
+	GLuint GetShadowMapFBO();
+	GLuint GetShadowMapDepthTexture();
+	int GetShadowMapResolution();
+
+	glm::mat4 GetProjectionMatrix();
+	glm::mat4 GetViewMatrix();
 };
 
 #endif

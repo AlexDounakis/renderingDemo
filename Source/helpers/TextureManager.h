@@ -20,6 +20,7 @@ protected:
 
 	// find the texture with the fiven filename and mipmaps
 	int findTexture(const char* filename, bool hasMipmaps);
+	GLenum internalFormat(uint8_t bitsPerPixel);
 
 public:
 	// get the static instance of Texture Manager

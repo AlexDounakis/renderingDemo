@@ -1,6 +1,7 @@
 #include "TextureManager.h"
 #include <algorithm>
 #include "SDL2/SDL_image.h"
+#include <iostream>
 
 // Texture
 TextureManager::TextureManager()
@@ -50,27 +51,30 @@ GLuint TextureManager::RequestTexture(const char* filename, bool hasMipmaps)
 		printf("SDL load Error %s\n", SDL_GetError());
 		return 0; // error
 	}
-
+	
 	TextureContainer container;
 	container.filename = filename;
 	container.hasMipmaps = hasMipmaps;
 	GLenum texture_format;
+	GLenum internal_texture_format;
 	GLint nOfColors;
 	glGenTextures(1, &container.textureID);
 	glBindTexture(GL_TEXTURE_2D, container.textureID);
 	nOfColors = surf->format->BytesPerPixel;
+
 	switch (surf->format->BytesPerPixel)
 	{
-		case 4: // contains alpha channel
-			if (surf->format->Rmask == 0x000000ff)	 texture_format = GL_RGBA;
-			else texture_format = GL_BGRA;
-			nOfColors = GL_RGBA;
-			break;
 		case 3: // no alpha channel
 			if (surf->format->Rmask == 0x000000ff) texture_format = GL_RGB;
 			else texture_format = GL_BGR;
 			nOfColors = GL_RGB;
 			break;
+		case 4: // contains alpha channel
+			if (surf->format->Rmask == 0x000000ff)	 texture_format = GL_RGBA;
+			else texture_format = GL_BGRA;
+			nOfColors = GL_RGBA;
+			break;
+
 		default:
 			printf("Error in number of colors at %s\n", filename);
 	}
