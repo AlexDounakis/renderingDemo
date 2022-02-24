@@ -15,9 +15,7 @@ public:
 	// Empty
 
 protected:
-	float	craft_x;
-	float	craft_y;
-	float	craft_z;
+	
 
 	int											m_screen_width, m_screen_height;
 
@@ -30,6 +28,20 @@ protected:
 	glm::vec2									m_camera_movement;
 	glm::vec2									m_camera_look_angle_destination;
 	
+	// Craft Movement 
+	float	craft_x;
+	float	craft_y;
+	float	craft_z;
+
+	glm::vec3										m_craft_position;
+	glm::vec3										m_craft_target_position;
+	glm::vec3										m_craft_facing;
+	glm::vec3										m_craft_right;
+	glm::vec3										m_craft_up;
+	glm::vec2										m_craft_movement;
+	glm::vec2										m_craft_look_angle_destination;
+	//
+
 	float										m_continous_time;
 
 	//Objects
@@ -76,6 +88,7 @@ public:
 	//update functions
 	void										UpdateGeometry(float dt);
 	void										UpdateCamera(float dt);
+	void										UpdateCraft(float dt);
 
 	//camera move functions
 	void										CameraMoveForward(bool enable);

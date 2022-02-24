@@ -216,78 +216,107 @@ void Renderer::Update(float dt)
 
 	}
 		
-	void Renderer::UpdateCamera(float dt)
-	{
-		glm::vec3 direction = glm::normalize(m_camera_target_position - m_camera_position);
+void Renderer::UpdateCamera(float dt)
+{
+	glm::vec3 direction = glm::normalize(m_camera_target_position - m_camera_position);
 
-		m_camera_position = m_camera_position + (m_camera_movement.x * 5.f * dt) * direction;
-		m_camera_target_position = m_camera_target_position + (m_camera_movement.x * 5.f * dt) * direction;
+	m_camera_position = m_camera_position + (m_camera_movement.x * 5.f * dt) * direction;
+	m_camera_target_position = m_camera_target_position + (m_camera_movement.x * 5.f * dt) * direction;
 
-		glm::vec3 right = glm::normalize(glm::cross(direction, m_camera_up_vector));
+	glm::vec3 right = glm::normalize(glm::cross(direction, m_camera_up_vector));
 
-		m_camera_position = m_camera_position + (m_camera_movement.y * 5.f * dt) * right;
-		m_camera_target_position = m_camera_target_position + (m_camera_movement.y * 5.f * dt) * right;
+	m_camera_position = m_camera_position + (m_camera_movement.y * 5.f * dt) * right;
+	m_camera_target_position = m_camera_target_position + (m_camera_movement.y * 5.f * dt) * right;
 
-		float speed = glm::pi<float>() * 0.002;
-		glm::mat4 rotation = glm::rotate(glm::mat4(1.f), m_camera_look_angle_destination.y * speed, right);
-		rotation *= glm::rotate(glm::mat4(1.f), m_camera_look_angle_destination.x * speed, m_camera_up_vector);
-		m_camera_look_angle_destination = glm::vec2(0.f);
+	float speed = glm::pi<float>() * 0.002;
+	glm::mat4 rotation = glm::rotate(glm::mat4(1.f), m_camera_look_angle_destination.y * speed, right);
+	rotation *= glm::rotate(glm::mat4(1.f), m_camera_look_angle_destination.x * speed, m_camera_up_vector);
+	m_camera_look_angle_destination = glm::vec2(0.f);
 
-		direction = rotation * glm::vec4(direction, 0.f);
-		m_camera_target_position = m_camera_position + direction * glm::distance(m_camera_position, m_camera_target_position);
+	direction = rotation * glm::vec4(direction, 0.f);
+	m_camera_target_position = m_camera_position + direction * glm::distance(m_camera_position, m_camera_target_position);
 
-		m_view_matrix = glm::lookAt(m_camera_position, m_camera_target_position, m_camera_up_vector);
+	m_view_matrix = glm::lookAt(m_camera_position, m_camera_target_position, m_camera_up_vector);
 
-		//std::cout << m_camera_position.x << " " << m_camera_position.y << " " << m_camera_position.z << " " << std::endl;
-		//std::cout << m_camera_target_position.x << " " << m_camera_target_position.y << " " << m_camera_target_position.z << " " << std::endl;
-		//m_light.SetPosition(m_camera_position);
-		//m_light.SetTarget(m_camera_target_position);
+	//std::cout << m_camera_position.x << " " << m_camera_position.y << " " << m_camera_position.z << " " << std::endl;
+	//std::cout << m_camera_target_position.x << " " << m_camera_target_position.y << " " << m_camera_target_position.z << " " << std::endl;
+	//m_light.SetPosition(m_camera_position);
+	//m_light.SetTarget(m_camera_target_position);
+}
+
+void Renderer::UpdateCraft(float dt)
+{
+	GeometryNode& craft = *this->m_nodes[OBJECS::CRAFT];
+
+	glm::vec3 direction = glm::normalize(m_craft_target_position - m_craft_position);
+
+	m_craft_position = m_craft_position + (m_craft_movement.x * 5.f * dt) * direction;
+	m_craft_target_position = m_craft_target_position + (m_craft_movement.x * 5.f * dt) * direction;
+
+	glm::vec3 right = glm::normalize(glm::cross(direction, m_craft_up));
+
+	m_craft_position = m_craft_position + (m_craft_movement.y * 5.f * dt) * right;
+	m_craft_target_position = m_craft_target_position + (m_craft_movement.y * 5.f * dt) * right;
+
+	float speed = glm::pi<float>() * 20.;
+
+	glm::mat4 rotation = glm::rotate(glm::mat4(1.f), m_camera_look_angle_destination.y * speed, right);
+	rotation *= glm::rotate(glm::mat4(1.f), m_craft_look_angle_destination.x * speed, m_craft_up);
+	m_craft_look_angle_destination = glm::vec2(0.f);
+
+	direction = rotation * glm::vec4(direction, 0.f);
+	m_craft_target_position = m_craft_position + direction * glm::distance(m_craft_position, m_craft_target_position);
+
+	craft.app_model_matrix = glm::lookAt(m_craft_position, m_craft_target_position, m_craft_up);
+
+	m_view_matrix = glm::lookAt(m_craft_position, m_craft_target_position, m_craft_up);
+		//m_projection_matrix = m_view_matrix;
 	}
 
 // HELPERS
 bool Renderer::ResizeBuffers(int width, int height)
+{
+	m_screen_width = width;
+	m_screen_height = height;
+
+	// texture
+	glBindTexture(GL_TEXTURE_2D, m_fbo_texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_screen_width, m_screen_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+	glBindTexture(GL_TEXTURE_2D, m_fbo_depth_texture);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, m_screen_width, m_screen_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// framebuffer to link to everything together
+	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fbo_texture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_fbo_depth_texture, 0);
+
+	GLenum status = Tools::CheckFramebufferStatus(m_fbo);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
 	{
-		m_screen_width = width;
-		m_screen_height = height;
-
-		// texture
-		glBindTexture(GL_TEXTURE_2D, m_fbo_texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_screen_width, m_screen_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-		glBindTexture(GL_TEXTURE_2D, m_fbo_depth_texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, m_screen_width, m_screen_height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		// framebuffer to link to everything together
-		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_fbo_texture, 0);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_fbo_depth_texture, 0);
-
-		GLenum status = Tools::CheckFramebufferStatus(m_fbo);
-		if (status != GL_FRAMEBUFFER_COMPLETE)
-		{
-			return false;
-		}
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-		return true;
+		return false;
 	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	return true;
+}
 
 bool Renderer::ReloadShaders()
-	{
-		m_geometry_program.ReloadProgram();
-		m_post_program.ReloadProgram();
-		return true;
-	}
+{
+	m_geometry_program.ReloadProgram();
+	m_post_program.ReloadProgram();
+	return true;
+}
 
 /// RENDER
 void Renderer::Render()
@@ -360,7 +389,7 @@ void Renderer::Render()
 		}
 	}
 
-	void Renderer::RenderGeometry()
+void Renderer::RenderGeometry()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
 		GLenum drawbuffers[1] = { GL_COLOR_ATTACHMENT0 };
@@ -401,69 +430,69 @@ void Renderer::Render()
 
 	}
 
-		void Renderer::RenderStaticGeometry()
+void Renderer::RenderStaticGeometry()
+{
+	glm::mat4 proj = m_projection_matrix * m_view_matrix * m_world_matrix;
+
+	for (auto& node : this->m_nodes)
+	{
+		glBindVertexArray(node->m_vao);
+
+		m_geometry_program.loadMat4("uniform_projection_matrix", proj * node->app_model_matrix);
+		m_geometry_program.loadMat4("uniform_normal_matrix", glm::transpose(glm::inverse(m_world_matrix * node->app_model_matrix)));
+		m_geometry_program.loadMat4("uniform_world_matrix", m_world_matrix * node->app_model_matrix);
+
+		for (int j = 0; j < node->parts.size(); ++j)
 		{
-			glm::mat4 proj = m_projection_matrix * m_view_matrix * m_world_matrix;
+			m_geometry_program.loadVec3("uniform_diffuse", node->parts[j].diffuse);
+			m_geometry_program.loadVec3("uniform_ambient", node->parts[j].ambient);
+			m_geometry_program.loadVec3("uniform_specular", node->parts[j].specular);
+			m_geometry_program.loadFloat("uniform_shininess", node->parts[j].shininess);
+			m_geometry_program.loadInt("uniform_has_tex_diffuse", (node->parts[j].diffuse_textureID > 0) ? 1 : 0);
+			m_geometry_program.loadInt("uniform_has_tex_normal", (node->parts[j].bump_textureID > 0 || node->parts[j].normal_textureID > 0) ? 1 : 0);
+			m_geometry_program.loadInt("uniform_is_tex_bumb", (node->parts[j].bump_textureID > 0) ? 1 : 0);
 
-			for (auto& node : this->m_nodes)
-			{
-				glBindVertexArray(node->m_vao);
+			glActiveTexture(GL_TEXTURE0);
+			m_geometry_program.loadInt("uniform_tex_diffuse", 0);
+			glBindTexture(GL_TEXTURE_2D, node->parts[j].diffuse_textureID);
 
-				m_geometry_program.loadMat4("uniform_projection_matrix", proj * node->app_model_matrix);
-				m_geometry_program.loadMat4("uniform_normal_matrix", glm::transpose(glm::inverse(m_world_matrix * node->app_model_matrix)));
-				m_geometry_program.loadMat4("uniform_world_matrix", m_world_matrix * node->app_model_matrix);
+			glActiveTexture(GL_TEXTURE1);
+			m_geometry_program.loadInt("uniform_tex_normal", 1);
+			glBindTexture(GL_TEXTURE_2D, node->parts[j].bump_textureID > 0 ?
+				node->parts[j].bump_textureID : node->parts[j].normal_textureID);
 
-				for (int j = 0; j < node->parts.size(); ++j)
-				{
-					m_geometry_program.loadVec3("uniform_diffuse", node->parts[j].diffuse);
-					m_geometry_program.loadVec3("uniform_ambient", node->parts[j].ambient);
-					m_geometry_program.loadVec3("uniform_specular", node->parts[j].specular);
-					m_geometry_program.loadFloat("uniform_shininess", node->parts[j].shininess);
-					m_geometry_program.loadInt("uniform_has_tex_diffuse", (node->parts[j].diffuse_textureID > 0) ? 1 : 0);
-					m_geometry_program.loadInt("uniform_has_tex_normal", (node->parts[j].bump_textureID > 0 || node->parts[j].normal_textureID > 0) ? 1 : 0);
-					m_geometry_program.loadInt("uniform_is_tex_bumb", (node->parts[j].bump_textureID > 0) ? 1 : 0);
-
-					glActiveTexture(GL_TEXTURE0);
-					m_geometry_program.loadInt("uniform_tex_diffuse", 0);
-					glBindTexture(GL_TEXTURE_2D, node->parts[j].diffuse_textureID);
-
-					glActiveTexture(GL_TEXTURE1);
-					m_geometry_program.loadInt("uniform_tex_normal", 1);
-					glBindTexture(GL_TEXTURE_2D, node->parts[j].bump_textureID > 0 ?
-						node->parts[j].bump_textureID : node->parts[j].normal_textureID);
-
-					glDrawArrays(GL_TRIANGLES, node->parts[j].start_offset, node->parts[j].count);
-				}
-
-				glBindVertexArray(0);
-			}
+			glDrawArrays(GL_TRIANGLES, node->parts[j].start_offset, node->parts[j].count);
 		}
 
-	void Renderer::RenderPostProcess()
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glClearColor(0.f, 0.8f, 1.f, 1.f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glDisable(GL_DEPTH_TEST);
-
-		m_post_program.Bind();
-
-		glBindVertexArray(m_vao_fbo);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, m_fbo_texture);
-		m_post_program.loadInt("uniform_texture", 0);
-
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, m_light.GetShadowMapDepthTexture());
-		m_post_program.loadInt("uniform_shadow_map", 1);
-
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
 		glBindVertexArray(0);
-		glBindTexture(GL_TEXTURE_2D, 0);
-		m_post_program.Unbind();
 	}
+}
+
+void Renderer::RenderPostProcess()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glClearColor(0.f, 0.8f, 1.f, 1.f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDisable(GL_DEPTH_TEST);
+
+	m_post_program.Bind();
+
+	glBindVertexArray(m_vao_fbo);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_fbo_texture);
+	m_post_program.loadInt("uniform_texture", 0);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_light.GetShadowMapDepthTexture());
+	m_post_program.loadInt("uniform_shadow_map", 1);
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	m_post_program.Unbind();
+}
 
 // CAMERA
 void Renderer::CameraMoveForward(bool enable)

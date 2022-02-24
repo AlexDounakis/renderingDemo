@@ -39,11 +39,11 @@
     <ClInclude Include="Source\helpers\LightNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Source\helpers\AssetManager.hpp">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\helpers\CollidableNode.h">
-      <Filter>Resource Files</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\helpers\AssetManager.hpp">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
