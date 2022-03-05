@@ -28,3 +28,6 @@
 *.exe
 *.out
 *.app
+/x64/Release
+/.vs/renderingDemo/v17
+*.json
