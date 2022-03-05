@@ -15,6 +15,12 @@ public:
 	// Empty
 
 protected:
+	//craft positions
+	float										speedBias = 10.f;
+	float										craft_x;
+	float										craft_y;
+	float										craft_z;
+
 	int											m_screen_width, m_screen_height;
 
 	glm::mat4									m_world_matrix;
@@ -69,16 +75,23 @@ public:
 	void										Update(float dt);
 	void										Render();
 	
-	//'update' functions
+	//update functions
 	void										UpdateGeometry(float dt);
 	void										UpdateCamera(float dt);
 
-	//camera functions
+	//camera move functions
 	void										CameraMoveForward(bool enable);
 	void										CameraMoveBackWard(bool enable);
 	void										CameraMoveLeft(bool enable);
 	void										CameraMoveRight(bool enable);
 	void										CameraLook(glm::vec2 lookDir);
+
+	//craft move functions
+	void										CraftMoveForward(bool enable);
+	void										CraftMoveBackward(bool enable);
+	void										CraftMoveLeft(bool enable);
+	void										CraftMoveRight(bool enable);
+	void										CraftLook(glm::vec2 lookDir);
 
 	bool										ReloadShaders();
 	bool										ResizeBuffers(int SCREEN_WIDTH, int SCREEN_HEIGHT);

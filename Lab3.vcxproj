@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\helpers\AssetManager.hpp" />
+    <ClInclude Include="Source\helpers\CollidableNode.h" />
     <ClInclude Include="Source\helpers\GeometricMesh.h" />
     <ClInclude Include="Source\helpers\GeometryNode.h" />
     <ClInclude Include="Source\helpers\LightNode.h" />
@@ -29,6 +31,8 @@
     <ClInclude Include="Source\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\helpers\AssetManager.cpp" />
+    <ClCompile Include="Source\helpers\CollidableNode.cpp" />
     <ClCompile Include="Source\helpers\GeometricMesh.cpp" />
     <ClCompile Include="Source\helpers\GeometryNode.cpp" />
     <ClCompile Include="Source\helpers\LightNode.cpp" />
@@ -44,6 +48,8 @@
     <None Include="Assets\Shaders\basic_rendering.vert" />
     <None Include="Assets\Shaders\post_process.frag" />
     <None Include="Assets\Shaders\post_process.vert" />
+    <None Include="Assets\Shaders\shadow_map_rendering.frag" />
+    <None Include="Assets\Shaders\shadow_map_rendering.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -70,7 +76,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">

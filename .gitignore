@@ -28,6 +28,10 @@
 *.exe
 *.out
 *.app
+<<<<<<< HEAD
 /x64/Release
 /.vs/renderingDemo/v17
 *.json
+=======
+/.vs/renderingDemo
+>>>>>>> daneBranch

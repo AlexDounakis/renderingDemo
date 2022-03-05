@@ -166,7 +166,12 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 		terrain.model_matrix = glm::mat4(1.f);
 
 		//craft object init
-		craft.model_matrix = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 200.f, 0.f));
+		this->craft_x = -70.f;
+		this->craft_y = 50.f;
+		this->craft_z = 100.f;
+
+		craft.model_matrix = glm::translate(glm::mat4(1.f), glm::vec3(craft_x, craft_y, craft_z));
+		craft.app_model_matrix = craft.model_matrix;
 
 		this->m_world_matrix = glm::scale(glm::mat4(1.f), glm::vec3(0.02, 0.02, 0.02));
 
@@ -174,8 +179,10 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 
 	void Renderer::InitCamera()
 	{
-		this->m_camera_position = glm::vec3(2, 5, 4.5);
-		this->m_camera_target_position = glm::vec3(0, 0, 0);
+		GeometryNode& craft = *this->m_nodes[OBJECS::CRAFT];
+
+		this->m_camera_position = glm::vec3(craft_x * 0.02 , (craft_y * 0.02) + 0.5, (craft_z * 0.02) + 1.5);
+		this->m_camera_target_position = glm::vec3(craft_x * 0.02 , craft_y * 0.02 , craft_z * 0.02);
 		this->m_camera_up_vector = glm::vec3(0, 1, 0);
 
 		this->m_view_matrix = glm::lookAt(
@@ -201,40 +208,29 @@ void Renderer::Update(float dt)
 	{
 		GeometryNode& craft = *this->m_nodes[OBJECS::CRAFT];
 
-		craft.app_model_matrix =
-			glm::translate(glm::mat4(1.f), glm::vec3(craft.m_aabb.center.x, craft.m_aabb.center.y, craft.m_aabb.center.z)) *
-			glm::rotate(glm::mat4(1.f), m_continous_time, glm::vec3(0.f, 1.f, 0.f)) *
-			glm::translate(glm::mat4(1.f), glm::vec3(-craft.m_aabb.center.x, -craft.m_aabb.center.y, -craft.m_aabb.center.z)) *
-			craft.model_matrix;
+		craft.model_matrix = glm::translate(glm::mat4(1.f), glm::vec3(craft_x, craft_y, craft_z));
+		craft.app_model_matrix = craft.model_matrix;
 
 	}
-
+		
 	void Renderer::UpdateCamera(float dt)
 	{
-		glm::vec3 direction = glm::normalize(m_camera_target_position - m_camera_position);
+		GeometryNode& craft = *this->m_nodes[OBJECS::CRAFT];
 
-		m_camera_position = m_camera_position + (m_camera_movement.x * 5.f * dt) * direction;
-		m_camera_target_position = m_camera_target_position + (m_camera_movement.x * 5.f * dt) * direction;
+		this->m_camera_position = glm::vec3(craft_x * 0.02, (craft_y * 0.02) + 0.5, (craft_z * 0.02) + 1.5);
+		this->m_camera_target_position = glm::vec3(craft_x * 0.02, craft_y * 0.02, craft_z * 0.02);
+		this->m_camera_up_vector = glm::vec3(0, 1, 0);
 
-		glm::vec3 right = glm::normalize(glm::cross(direction, m_camera_up_vector));
+		this->m_view_matrix = glm::lookAt(
+			this->m_camera_position,
+			this->m_camera_target_position,
+			m_camera_up_vector);
 
-		m_camera_position = m_camera_position + (m_camera_movement.y * 5.f * dt) * right;
-		m_camera_target_position = m_camera_target_position + (m_camera_movement.y * 5.f * dt) * right;
+		this->m_projection_matrix = glm::perspective(
+			glm::radians(45.f),
+			this->m_screen_width / (float)this->m_screen_height,
+			0.1f, 100.f);
 
-		float speed = glm::pi<float>() * 0.002;
-		glm::mat4 rotation = glm::rotate(glm::mat4(1.f), m_camera_look_angle_destination.y * speed, right);
-		rotation *= glm::rotate(glm::mat4(1.f), m_camera_look_angle_destination.x * speed, m_camera_up_vector);
-		m_camera_look_angle_destination = glm::vec2(0.f);
-
-		direction = rotation * glm::vec4(direction, 0.f);
-		m_camera_target_position = m_camera_position + direction * glm::distance(m_camera_position, m_camera_target_position);
-
-		m_view_matrix = glm::lookAt(m_camera_position, m_camera_target_position, m_camera_up_vector);
-
-		//std::cout << m_camera_position.x << " " << m_camera_position.y << " " << m_camera_position.z << " " << std::endl;
-		//std::cout << m_camera_target_position.x << " " << m_camera_target_position.y << " " << m_camera_target_position.z << " " << std::endl;
-		//m_light.SetPosition(m_camera_position);
-		//m_light.SetTarget(m_camera_target_position);
 	}
 
 // HELPERS
@@ -299,100 +295,100 @@ void Renderer::Render()
 }
 
 	void Renderer::RenderShadowMaps()
-{
-	if (m_light.GetCastShadowsStatus())
 	{
-		int m_depth_texture_resolution = m_light.GetShadowMapResolution();
-
-		glBindFramebuffer(GL_FRAMEBUFFER, m_light.GetShadowMapFBO());
-		glViewport(0, 0, m_depth_texture_resolution, m_depth_texture_resolution);
-		glEnable(GL_DEPTH_TEST);
-		glClear(GL_DEPTH_BUFFER_BIT);
-
-		// Bind the shadow mapping program
-		m_spot_light_shadow_map_program.Bind(); // !!!!
-
-		glm::mat4 proj = m_light.GetProjectionMatrix() * m_light.GetViewMatrix() * m_world_matrix;
-
-		for (auto& node : this->m_nodes)
+		if (m_light.GetCastShadowsStatus())
 		{
-			glBindVertexArray(node->m_vao);
+			int m_depth_texture_resolution = m_light.GetShadowMapResolution();
 
-			m_spot_light_shadow_map_program.loadMat4("uniform_projection_matrix", proj * node->app_model_matrix);
+			glBindFramebuffer(GL_FRAMEBUFFER, m_light.GetShadowMapFBO());
+			glViewport(0, 0, m_depth_texture_resolution, m_depth_texture_resolution);
+			glEnable(GL_DEPTH_TEST);
+			glClear(GL_DEPTH_BUFFER_BIT);
 
-			for (int j = 0; j < node->parts.size(); ++j)
+			// Bind the shadow mapping program
+			m_spot_light_shadow_map_program.Bind(); // !!!!
+
+			glm::mat4 proj = m_light.GetProjectionMatrix() * m_light.GetViewMatrix() * m_world_matrix;
+
+			for (auto& node : this->m_nodes)
 			{
-				glDrawArrays(GL_TRIANGLES, node->parts[j].start_offset, node->parts[j].count);
+				glBindVertexArray(node->m_vao);
+
+				m_spot_light_shadow_map_program.loadMat4("uniform_projection_matrix", proj * node->app_model_matrix);
+
+				for (int j = 0; j < node->parts.size(); ++j)
+				{
+					glDrawArrays(GL_TRIANGLES, node->parts[j].start_offset, node->parts[j].count);
+				}
+
+				glBindVertexArray(0);
 			}
 
-			glBindVertexArray(0);
-		}
+			glm::vec3 camera_dir = normalize(m_camera_target_position - m_camera_position);
+			float_t isectT = 0.f;
 
-		glm::vec3 camera_dir = normalize(m_camera_target_position - m_camera_position);
-		float_t isectT = 0.f;
-
-		for (auto& node : this->m_collidables_nodes)
-		{
-			if (node->intersectRay(m_camera_position, camera_dir, m_world_matrix, isectT)) continue;
-
-			glBindVertexArray(node->m_vao);
-
-			m_spot_light_shadow_map_program.loadMat4("uniform_projection_matrix", proj * node->app_model_matrix);
-
-			for (int j = 0; j < node->parts.size(); ++j)
+			for (auto& node : this->m_collidables_nodes)
 			{
-				glDrawArrays(GL_TRIANGLES, node->parts[j].start_offset, node->parts[j].count);
+				if (node->intersectRay(m_camera_position, camera_dir, m_world_matrix, isectT)) continue;
+
+				glBindVertexArray(node->m_vao);
+
+				m_spot_light_shadow_map_program.loadMat4("uniform_projection_matrix", proj * node->app_model_matrix);
+
+				for (int j = 0; j < node->parts.size(); ++j)
+				{
+					glDrawArrays(GL_TRIANGLES, node->parts[j].start_offset, node->parts[j].count);
+				}
+
+				glBindVertexArray(0);
 			}
 
-			glBindVertexArray(0);
+			m_spot_light_shadow_map_program.Unbind();
+			glDisable(GL_DEPTH_TEST);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		}
-
-		m_spot_light_shadow_map_program.Unbind();
-		glDisable(GL_DEPTH_TEST);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
-}
 
 	void Renderer::RenderGeometry()
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
-	GLenum drawbuffers[1] = { GL_COLOR_ATTACHMENT0 };
-	glDrawBuffers(1, drawbuffers);
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, m_fbo);
+		GLenum drawbuffers[1] = { GL_COLOR_ATTACHMENT0 };
+		glDrawBuffers(1, drawbuffers);
 
-	glViewport(0, 0, m_screen_width, m_screen_height);
-	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
-	glClearDepth(1.f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glViewport(0, 0, m_screen_width, m_screen_height);
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_LEQUAL);
+		glClearDepth(1.f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	m_geometry_program.Bind();
+		m_geometry_program.Bind();
 
-	glm::mat4 proj = m_projection_matrix * m_view_matrix * m_world_matrix;
+		glm::mat4 proj = m_projection_matrix * m_view_matrix * m_world_matrix;
 
-	m_geometry_program.loadVec3("uniform_light_color", m_light.GetColor());
-	m_geometry_program.loadVec3("uniform_light_dir", m_light.GetDirection());
-	m_geometry_program.loadVec3("uniform_light_pos", m_light.GetPosition());
+		m_geometry_program.loadVec3("uniform_light_color", m_light.GetColor());
+		m_geometry_program.loadVec3("uniform_light_dir", m_light.GetDirection());
+		m_geometry_program.loadVec3("uniform_light_pos", m_light.GetPosition());
 
-	m_geometry_program.loadFloat("uniform_light_umbra", m_light.GetUmbra());
-	m_geometry_program.loadFloat("uniform_light_penumbra", m_light.GetPenumbra());
+		m_geometry_program.loadFloat("uniform_light_umbra", m_light.GetUmbra());
+		m_geometry_program.loadFloat("uniform_light_penumbra", m_light.GetPenumbra());
 
-	m_geometry_program.loadVec3("uniform_camera_pos", m_camera_position);
-	m_geometry_program.loadVec3("uniform_camera_dir", normalize(m_camera_target_position - m_camera_position));
+		m_geometry_program.loadVec3("uniform_camera_pos", m_camera_position);
+		m_geometry_program.loadVec3("uniform_camera_dir", normalize(m_camera_target_position - m_camera_position));
 
-	m_geometry_program.loadMat4("uniform_light_projection_view", m_light.GetProjectionMatrix() * m_light.GetViewMatrix());
-	m_geometry_program.loadInt("uniform_cast_shadows", m_light.GetCastShadowsStatus() ? 1 : 0);
+		m_geometry_program.loadMat4("uniform_light_projection_view", m_light.GetProjectionMatrix() * m_light.GetViewMatrix());
+		m_geometry_program.loadInt("uniform_cast_shadows", m_light.GetCastShadowsStatus() ? 1 : 0);
 
-	glActiveTexture(GL_TEXTURE2);
-	m_geometry_program.loadInt("uniform_shadow_map", 2);
-	glBindTexture(GL_TEXTURE_2D, m_light.GetShadowMapDepthTexture());
+		glActiveTexture(GL_TEXTURE2);
+		m_geometry_program.loadInt("uniform_shadow_map", 2);
+		glBindTexture(GL_TEXTURE_2D, m_light.GetShadowMapDepthTexture());
 
-	RenderStaticGeometry();
+		RenderStaticGeometry();
 
-	m_geometry_program.Unbind();
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glDisable(GL_DEPTH_TEST);
+		m_geometry_program.Unbind();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDisable(GL_DEPTH_TEST);
 
-}
+	}
 
 		void Renderer::RenderStaticGeometry()
 		{
@@ -482,4 +478,30 @@ void Renderer::CameraMoveRight(bool enable)
 void Renderer::CameraLook(glm::vec2 lookDir)
 {
 	m_camera_look_angle_destination = lookDir;
+}
+
+// CRAFT FUNCTIONS
+void Renderer::CraftMoveForward(bool enable)
+{
+	craft_z = (enable) ? craft_z - speedBias : 0;
+}
+
+void Renderer::CraftMoveBackward(bool enable)
+{
+	craft_z = (enable) ? craft_z + speedBias : 0;
+}
+
+void Renderer::CraftMoveLeft(bool enable)
+{
+	craft_x = (enable) ? craft_x - speedBias : 0;
+}
+
+void Renderer::CraftMoveRight(bool enable)
+{
+	craft_x = (enable) ? craft_x + speedBias : 0;
+}
+
+void Renderer::CraftLook(glm::vec2 lookDir)
+{
+	//m_craft_look_angle_destination = lookDir;
 }
