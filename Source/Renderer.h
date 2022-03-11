@@ -33,9 +33,7 @@ protected:
 	glm::vec2									m_camera_look_angle_destination;
 	
 	// Craft Movement 
-	float	craft_x;
-	float	craft_y;
-	float	craft_z;
+	
 
 	glm::vec3										m_craft_position;
 	glm::vec3										m_craft_target_position;

@@ -3,3 +3,4 @@ C:\Users\kostas\Desktop\Lab3\x64\Release\renderingDemo.exe
 C:\Users\kostas\Desktop\renderingDemo\x64\Release\renderingDemo.exe
 C:\Users\dinos\Desktop\renderingDemo\x64\Release\renderingDemo.exe
 C:\Users\alex\source\repos\renderingDemo\x64\Release\renderingDemo.exe
+C:\Users\lolpr\Dounakis\renderingDemo\x64\Release\renderingDemo.exe
