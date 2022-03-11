@@ -15,7 +15,11 @@ public:
 	// Empty
 
 protected:
-	
+	//craft positions
+	float										speedBias = 10.f;
+	float										craft_x;
+	float										craft_y;
+	float										craft_z;
 
 	int											m_screen_width, m_screen_height;
 

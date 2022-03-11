@@ -170,12 +170,6 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 		this->craft_y = 50.f;
 		this->craft_z = 100.f;
 
-		this->m_craft_position = glm::vec3(craft_x, craft_y, craft_z);
-		this->m_craft_target_position = glm::vec3(craft_x * 0.02, craft_y * 0.02, craft_z * 0.02);
-		this->m_craft_up = glm::vec3(0, 1, 0);
-
-
-
 		craft.model_matrix = glm::translate(glm::mat4(1.f), glm::vec3(craft_x, craft_y, craft_z));
 		craft.app_model_matrix = craft.model_matrix;
 
@@ -187,10 +181,9 @@ void Renderer::InitCamera()
 {
 	GeometryNode& craft = *this->m_nodes[OBJECS::CRAFT];
 
-	//this->m_camera_position = glm::vec3(craft_position.x, m_camera_position.y, m_craft_position.z + 10);
-	this->m_camera_position = glm::vec3(craft_x * 0.02 , (craft_y * 0.02) + 0.5, (craft_z * 0.02) + 1.5);
-	this->m_camera_target_position = glm::vec3(craft_x * 0.02 , craft_y * 0.02 , craft_z * 0.02);
-	this->m_camera_up_vector = glm::vec3(0, 1, 0);
+		this->m_camera_position = glm::vec3(craft_x * 0.02 , (craft_y * 0.02) + 0.5, (craft_z * 0.02) + 1.5);
+		this->m_camera_target_position = glm::vec3(craft_x * 0.02 , craft_y * 0.02 , craft_z * 0.02);
+		this->m_camera_up_vector = glm::vec3(0, 1, 0);
 
 	this->m_view_matrix = glm::lookAt(
 		this->m_camera_position,
@@ -217,54 +210,30 @@ void Renderer::UpdateGeometry(float dt)
 {
 	GeometryNode& craft = *this->m_nodes[OBJECS::CRAFT];
 
-	craft.app_model_matrix =
-		/*glm::translate(glm::mat4(1.f), glm::vec3(craft.m_aabb.center.x, craft.m_aabb.center.y, craft.m_aabb.center.z)) *
-		glm::rotate(glm::mat4(1.f), m_continous_time, glm::vec3(0.f, 1.f, 0.f)) *
-		glm::translate(glm::mat4(1.f), glm::vec3(-craft.m_aabb.center.x, -craft.m_aabb.center.y, -craft.m_aabb.center.z)) **/
-		craft.model_matrix;
+		craft.model_matrix = glm::translate(glm::mat4(1.f), glm::vec3(craft_x, craft_y, craft_z));
+		craft.app_model_matrix = craft.model_matrix;
 
 }
 		
-void Renderer::UpdateCamera(float dt)
-{
-	glm::vec3 direction = glm::normalize(m_camera_target_position - m_camera_position);
+	void Renderer::UpdateCamera(float dt)
+	{
+		GeometryNode& craft = *this->m_nodes[OBJECS::CRAFT];
 
-	m_camera_position = m_camera_position + (m_camera_movement.x * 5.f * dt) * direction;
-	m_camera_target_position = m_camera_target_position + (m_camera_movement.x * 5.f * dt) * direction;
+		this->m_camera_position = glm::vec3(craft_x * 0.02, (craft_y * 0.02) + 0.5, (craft_z * 0.02) + 1.5);
+		this->m_camera_target_position = glm::vec3(craft_x * 0.02, craft_y * 0.02, craft_z * 0.02);
+		this->m_camera_up_vector = glm::vec3(0, 1, 0);
 
-	glm::vec3 right = glm::normalize(glm::cross(direction, m_camera_up_vector));
+		this->m_view_matrix = glm::lookAt(
+			this->m_camera_position,
+			this->m_camera_target_position,
+			m_camera_up_vector);
 
-	m_camera_position = m_camera_position + (m_camera_movement.y * 5.f * dt) * right;
-	m_camera_target_position = m_camera_target_position + (m_camera_movement.y * 5.f * dt) * right;
+		this->m_projection_matrix = glm::perspective(
+			glm::radians(45.f),
+			this->m_screen_width / (float)this->m_screen_height,
+			0.1f, 100.f);
 
-	float speed = glm::pi<float>() * 0.002;
-	glm::mat4 rotation = glm::rotate(glm::mat4(1.f), m_camera_look_angle_destination.y * speed, right);
-	rotation *= glm::rotate(glm::mat4(1.f), m_camera_look_angle_destination.x * speed, m_camera_up_vector);
-	m_camera_look_angle_destination = glm::vec2(0.f);
-
-	direction = rotation * glm::vec4(direction, 0.f);
-	m_camera_target_position = m_camera_position + direction * glm::distance(m_camera_position, m_camera_target_position);
-
-	m_view_matrix = glm::lookAt(m_camera_position, m_camera_target_position, m_camera_up_vector);
-
-
-	/*
-	this->m_camera_position = glm::vec3(craft_x * 0.02, (craft_y * 0.02) + 0.5, (craft_z * 0.02) + 1.5);
-	this->m_camera_target_position = glm::vec3(craft_x * 0.02, craft_y * 0.02, craft_z * 0.02);
-	this->m_camera_up_vector = glm::vec3(0, 1, 0);
-
-	this->m_view_matrix = glm::lookAt(
-		this->m_camera_position,
-		this->m_camera_target_position,
-		m_camera_up_vector);
-	*/
-
-
-	//std::cout << m_camera_position.x << " " << m_camera_position.y << " " << m_camera_position.z << " " << std::endl;
-	//std::cout << m_camera_target_position.x << " " << m_camera_target_position.y << " " << m_camera_target_position.z << " " << std::endl;
-	//m_light.SetPosition(m_camera_position);
-	//m_light.SetTarget(m_camera_target_position);
-}
+	}
 
 void Renderer::UpdateCraft(float dt)
 {
@@ -548,22 +517,22 @@ void Renderer::CameraLook(glm::vec2 lookDir)
 // CRAFT FUNCTIONS
 void Renderer::CraftMoveForward(bool enable)
 {
-	m_craft_movement.x = (enable) ? 5 : 0;
+	craft_z = (enable) ? craft_z - speedBias : 0;
 }
 
 void Renderer::CraftMoveBackward(bool enable)
 {
-	m_craft_movement.x = (enable) ? -5 : 0;
+	craft_z = (enable) ? craft_z + speedBias : 0;
 }
 
 void Renderer::CraftMoveLeft(bool enable)
 {
-	m_craft_movement.y = (enable) ? -5 : 0;
+	craft_x = (enable) ? craft_x - speedBias : 0;
 }
 
 void Renderer::CraftMoveRight(bool enable)
 {
-	m_craft_movement.y = (enable) ? 5 : 0;
+	craft_x = (enable) ? craft_x + speedBias : 0;
 }
 
 void Renderer::CraftLook(glm::vec2 lookDir)
