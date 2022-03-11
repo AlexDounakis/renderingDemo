@@ -1,30 +1,4 @@
 ﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(513,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (Lab3.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  Renderer.cpp
-C:\Users\lolpr\Dounakis\renderingDemo\Source\Renderer.cpp(252,14): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\lolpr\Dounakis\renderingDemo\Source\Renderer.cpp(494,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\lolpr\Dounakis\renderingDemo\Source\Renderer.cpp(499,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\lolpr\Dounakis\renderingDemo\Source\Renderer.cpp(504,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-C:\Users\lolpr\Dounakis\renderingDemo\Source\Renderer.cpp(509,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
-          with
-          [
-              T=float
-          ]
-  Generating code
-  Previous IPDB and IOBJ mismatch, fall back to full compilation.
-  All 1368 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
-  Finished generating code
   Lab3.vcxproj -> C:\Users\lolpr\Dounakis\renderingDemo\x64\Release\renderingDemo.exe
   copy "C:\Users\lolpr\Dounakis\renderingDemo\3rd party\bin\*.dll" "C:\Users\lolpr\Dounakis\renderingDemo\x64\Release\"
   C:\Users\lolpr\Dounakis\renderingDemo\3rd party\bin\glew32.dll

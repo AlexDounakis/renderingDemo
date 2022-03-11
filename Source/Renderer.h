@@ -91,6 +91,7 @@ public:
 	void										UpdateGeometry(float dt);
 	void										UpdateCamera(float dt);
 	void										UpdateCraft(float dt);
+	void										Tryout(float dt);
 
 	//camera move functions
 	void										CameraMoveForward(bool enable);

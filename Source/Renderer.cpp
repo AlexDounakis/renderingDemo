@@ -200,8 +200,9 @@ void Renderer::InitCamera()
 void Renderer::Update(float dt)
 {
 	this->UpdateGeometry(dt);
-	this->UpdateCamera(dt);
+	//this->UpdateCamera(dt);
 	//this->UpdateCraft(dt);
+	this->Tryout(dt);
 
 	m_continous_time += dt;
 }
@@ -222,6 +223,7 @@ void Renderer::UpdateGeometry(float dt)
 		this->m_camera_position = glm::vec3(craft_x * 0.02, (craft_y * 0.02) + 0.5, (craft_z * 0.02) + 1.5);
 		this->m_camera_target_position = glm::vec3(craft_x * 0.02, craft_y * 0.02, craft_z * 0.02);
 		this->m_camera_up_vector = glm::vec3(0, 1, 0);
+		this->m_camera_look_angle_destination = m_craft_look_angle_destination;
 
 		this->m_view_matrix = glm::lookAt(
 			this->m_camera_position,
@@ -234,6 +236,29 @@ void Renderer::UpdateGeometry(float dt)
 			0.1f, 100.f);
 
 	}
+
+void Renderer::Tryout(float dt) 
+{
+	glm::vec3 direction = glm::normalize(m_camera_target_position - m_camera_position);
+
+	m_camera_position = m_camera_position + (craft_x * 5.f * dt) * direction;
+	m_camera_target_position = m_camera_target_position + (craft_x * 5.f * dt) * direction;
+
+	glm::vec3 right = glm::normalize(glm::cross(direction, m_camera_up_vector));
+
+	m_camera_position = m_camera_position + (m_camera_movement.y * 5.f * dt) * right;
+	m_camera_target_position = m_camera_target_position + (m_camera_movement.y * 5.f * dt) * right;
+
+	float speed = glm::pi<float>() * 0.002;
+	glm::mat4 rotation = glm::rotate(glm::mat4(1.f), m_camera_look_angle_destination.y * speed, right);
+	rotation *= glm::rotate(glm::mat4(1.f), m_camera_look_angle_destination.x * speed, m_camera_up_vector);
+	m_camera_look_angle_destination = glm::vec2(0.f);
+
+	direction = rotation * glm::vec4(direction, 0.f);
+	m_camera_target_position = m_camera_position + direction * glm::distance(m_camera_position, m_camera_target_position);
+
+	m_view_matrix = glm::lookAt(m_camera_position, m_camera_target_position, m_camera_up_vector);
+}
 
 void Renderer::UpdateCraft(float dt)
 {

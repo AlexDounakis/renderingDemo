@@ -119,23 +119,23 @@ int main(int argc, char *argv[])
 				else if (event.key.keysym.sym == SDLK_r) renderer->ReloadShaders();
 				else if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_UP)
 				{
-					renderer->CraftMoveForward(true);
-					//renderer->CameraMoveForward(true);
+					//renderer->CraftMoveForward(true);
+					renderer->CameraMoveForward(true);
 				}
 				else if (event.key.keysym.sym == SDLK_s || event.key.keysym.sym == SDLK_DOWN)
 				{
-					renderer->CraftMoveBackward(true);
-					//renderer->CameraMoveBackWard(true);
+					//renderer->CraftMoveBackward(true);
+					renderer->CameraMoveBackWard(true);
 				}
 				else if (event.key.keysym.sym == SDLK_a || event.key.keysym.sym == SDLK_LEFT)
 				{
-					renderer->CraftMoveLeft(true);
-					//renderer->CameraMoveLeft(true);
+					//renderer->CraftMoveLeft(true);
+					renderer->CameraMoveLeft(true);
 				}
 				else if (event.key.keysym.sym == SDLK_d || event.key.keysym.sym == SDLK_RIGHT)
 				{
-					renderer->CraftMoveRight(true);
-					//renderer->CameraMoveRight(true);
+					//renderer->CraftMoveRight(true);
+					renderer->CameraMoveRight(true);
 				}
 			}
 			else if (event.type == SDL_KEYUP)
@@ -143,23 +143,23 @@ int main(int argc, char *argv[])
 				// Key up events
 				if (event.key.keysym.sym == SDLK_w || event.key.keysym.sym == SDLK_UP)
 				{
-					renderer->CraftMoveForward(true);
-					//renderer->CameraMoveForward(false);
+					//renderer->CraftMoveForward(true);
+					renderer->CameraMoveForward(false);
 				}
 				else if (event.key.keysym.sym == SDLK_s || event.key.keysym.sym == SDLK_DOWN)
 				{
-					renderer->CraftMoveBackward(true);
-					//renderer->CameraMoveBackWard(false);
+					//renderer->CraftMoveBackward(true);
+					renderer->CameraMoveBackWard(false);
 				}
 				else if (event.key.keysym.sym == SDLK_a || event.key.keysym.sym == SDLK_LEFT)
 				{
-					renderer->CraftMoveLeft(true);
-					//renderer->CameraMoveLeft(false);
+					//renderer->CraftMoveLeft(true);
+					renderer->CameraMoveLeft(false);
 				}
 				else if (event.key.keysym.sym == SDLK_d || event.key.keysym.sym == SDLK_RIGHT)
 				{
-					renderer->CraftMoveRight(true);
-					//renderer->CameraMoveRight(false);
+					//renderer->CraftMoveRight(true);
+					renderer->CameraMoveRight(false);
 				}
 			}
 			else if (event.type == SDL_MOUSEMOTION)
@@ -169,7 +169,8 @@ int main(int argc, char *argv[])
 
 				if (mouse_button_pressed)
 				{
-					renderer->CraftLook(prev_mouse_position - glm::vec2(x, y));
+					//renderer->CraftLook(prev_mouse_position - glm::vec2(x, y));
+					renderer->CameraLook(prev_mouse_position - glm::vec2(x, y));
 					prev_mouse_position = glm::vec2(x, y);
 				}
 			}
