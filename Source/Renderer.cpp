@@ -200,8 +200,8 @@ void Renderer::InitCamera()
 void Renderer::Update(float dt)
 {
 	this->UpdateGeometry(dt);
-	//this->UpdateCamera(dt);
-	this->UpdateCraft(dt);
+	this->UpdateCamera(dt);
+	//this->UpdateCraft(dt);
 
 	m_continous_time += dt;
 }
