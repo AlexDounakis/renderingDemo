@@ -20,6 +20,10 @@ protected:
 	float										craft_x;
 	float										craft_y;
 	float										craft_z;
+	float										Xaxis;
+	float										Yaxis;
+	float										rotatedXaxis;
+	float										rotatedYaxis;
 
 	int											m_screen_width, m_screen_height;
 
@@ -34,9 +38,12 @@ protected:
 	
 	// Craft Movement 
 	
+	float											m_craft_turnLeft;
+	float											m_craft_turnRight;
+	float											m_craft_turnUp;
+	float											m_craft_turnDown;
 
 	glm::vec3										m_craft_position;
-	glm::vec3										m_craft_target_position;
 	glm::vec3										m_craft_facing;
 	glm::vec3										m_craft_right;
 	glm::vec3										m_craft_up;
@@ -47,7 +54,7 @@ protected:
 	float										m_continous_time;
 
 	//Objects
-	enum OBJECS									{ TERRAIN, CRAFT };
+	enum OBJECS									{ TERRAIN, CRAFT , HULL };
 
 	std::vector<GeometryNode*>					m_nodes;								
 	std::vector<CollidableNode*>				m_collidables_nodes;
@@ -76,6 +83,7 @@ protected:
 	//'render' function
 	void										RenderGeometry();
 	void										RenderStaticGeometry();
+	void										RenderCollidableGeometry();
 	void										RenderShadowMaps();
 	void										RenderPostProcess();
 
@@ -89,9 +97,10 @@ public:
 	
 	//update functions
 	void										UpdateGeometry(float dt);
+	void										UpdateGeometry_2(float dt);
+	void										StaticCamera(float dt);
 	void										UpdateCamera(float dt);
 	void										UpdateCraft(float dt);
-	void										Tryout(float dt);
 
 	//camera move functions
 	void										CameraMoveForward(bool enable);
@@ -106,6 +115,7 @@ public:
 	void										CraftMoveLeft(bool enable);
 	void										CraftMoveRight(bool enable);
 	void										CraftLook(glm::vec2 lookDir);
+	void										CraftLook_2(glm::vec2 lookDir);
 
 	bool										ReloadShaders();
 	bool										ResizeBuffers(int SCREEN_WIDTH, int SCREEN_HEIGHT);

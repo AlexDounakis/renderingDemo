@@ -42,6 +42,7 @@
     <ClCompile Include="Source\helpers\Tools.cpp" />
     <ClCompile Include="Source\main.cpp" />
     <ClCompile Include="Source\Renderer.cpp" />
+    <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\Shaders\basic_rendering.frag" />

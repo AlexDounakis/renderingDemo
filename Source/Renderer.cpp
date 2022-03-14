@@ -35,7 +35,6 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 	bool techniques_initialization = InitShaders();
 
 	bool meshes_initialization = InitGeometricMeshes();
-
 	bool light_initialization = InitLights();
 
 	bool common_initialization = InitCommonItems();
@@ -84,7 +83,7 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 
 	bool Renderer::InitGeometricMeshes()
 	{
-		std::array<const char*, 2> assets = { "Assets/game_assets/terrain.obj", "Assets/game_assets/craft.obj" };
+		std::array<const char*, 3> assets = { "Assets/game_assets/terrain.obj", "Assets/game_assets/craft.obj" , "Assets/game_assets/collision_hull.obj"};
 
 		bool initialized = true;
 		OBJLoader loader;
@@ -100,18 +99,15 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 				this->m_nodes.push_back(node);
 				delete mesh;
 			}
-			else
-			{
-				initialized = false;
-			}
 		}
 
-		GeometricMesh* mesh = loader.load(assets[1]);
+
+		GeometricMesh* mesh = loader.load(assets[2]);
 
 		if (mesh != nullptr)
 		{
 			CollidableNode* node = new CollidableNode();
-			node->Init(assets[1], mesh);
+			node->Init(assets[2], mesh);
 			this->m_collidables_nodes.push_back(node);
 			delete mesh;
 		}
@@ -161,16 +157,18 @@ bool Renderer::Init(int SCREEN_WIDTH, int SCREEN_HEIGHT)
 	{
 		GeometryNode& terrain = *this->m_nodes[OBJECS::TERRAIN];
 		GeometryNode& craft = *this->m_nodes[OBJECS::CRAFT];
+		CollidableNode& hull = *this->m_collidables_nodes[0];
 
 		//terrain object init
 		terrain.model_matrix = glm::mat4(1.f);
 
+		//hull obj init
+		hull.model_matrix = glm::mat4(1.f);
 		//craft object init
-		this->craft_x = -70.f;
-		this->craft_y = 50.f;
-		this->craft_z = 100.f;
-
-		craft.model_matrix = glm::translate(glm::mat4(1.f), glm::vec3(craft_x, craft_y, craft_z));
+		this->m_craft_position = glm::vec3(-70.f,50.f,100.f);
+		
+		
+		craft.model_matrix = glm::translate(glm::mat4(1.f) , m_craft_position);
 		craft.app_model_matrix = craft.model_matrix;
 
 		this->m_world_matrix = glm::scale(glm::mat4(1.f), glm::vec3(0.02, 0.02, 0.02));
@@ -181,8 +179,8 @@ void Renderer::InitCamera()
 {
 	GeometryNode& craft = *this->m_nodes[OBJECS::CRAFT];
 
-		this->m_camera_position = glm::vec3(craft_x * 0.02 , (craft_y * 0.02) + 0.5, (craft_z * 0.02) + 1.5);
-		this->m_camera_target_position = glm::vec3(craft_x * 0.02 , craft_y * 0.02 , craft_z * 0.02);
+		this->m_camera_position = glm::vec3(m_craft_position.x * 0.02 , (m_craft_position.y * 0.02) + 0.5, (m_craft_position.z * 0.02) + 1.5);
+		this->m_camera_target_position = glm::vec3(m_craft_position.x * 0.02 , m_craft_position.y * 0.02 , m_craft_position.z * 0.02);
 		this->m_camera_up_vector = glm::vec3(0, 1, 0);
 
 	this->m_view_matrix = glm::lookAt(
@@ -199,50 +197,113 @@ void Renderer::InitCamera()
 // UPDATE
 void Renderer::Update(float dt)
 {
-	this->UpdateGeometry(dt);
+
+	this->StaticCamera(dt);
+	this->UpdateGeometry_2(dt);
+	
 	//this->UpdateCamera(dt);
 	//this->UpdateCraft(dt);
-	this->Tryout(dt);
+	//this->Tryout(dt);
 
 	m_continous_time += dt;
 }
 
+void Renderer::UpdateGeometry_2(float dt)
+{
+	GeometryNode& craft = *this->m_nodes[OBJECS::CRAFT];
+	CollidableNode& hull = *this->m_collidables_nodes[0];
+
+	glm::vec3 cCenter = glm::vec3(craft.model_matrix[3].x, craft.model_matrix[3].y, craft.model_matrix[3].z);
+	glm::vec3 cNose = cCenter - glm::vec3(craft.model_matrix[2].x, craft.model_matrix[2].y, craft.model_matrix[2].z);
+
+	float isectT = 0.f;
+
+	if (hull.intersectRay( cCenter, cNose, m_world_matrix, isectT, 1.f))
+	{
+		std::cout << "intersectRay TRUE" << std::endl;
+	}
+
+	float speed = 5.f;
+
+	rotatedXaxis = 0.f;
+	rotatedYaxis = 0.f;
+
+	// turn X 
+	if(m_craft_turnRight < 0.f)
+	{
+		craft.model_matrix *= glm::rotate(glm::mat4(1.f), dt * glm::radians(m_craft_turnRight), glm::vec3(0, 1, 0));
+	}
+	if (m_craft_turnLeft > 0.f)
+	{
+		craft.model_matrix *= glm::rotate(glm::mat4(1.f), dt * glm::radians(m_craft_turnLeft), glm::vec3(0, 1, 0));
+	}
+
+	// turn Y 
+	if (m_craft_turnUp < 0.f )
+	{
+		craft.model_matrix *= glm::rotate(glm::mat4(1.f), dt * glm::radians(m_craft_turnUp), glm::vec3(1, 0, 0));
+	}
+	if (m_craft_turnDown > 0.f)
+	{
+		craft.model_matrix *= glm::rotate(glm::mat4(1.f), dt * glm::radians(m_craft_turnDown), glm::vec3(1, 0, 0));
+	}
+
+	glm::vec3 oldPos = m_craft_position;
+	glm::vec3 newPos = oldPos +  speed * dt * glm::vec3(craft.model_matrix[2].x, craft.model_matrix[2].y, craft.model_matrix[2].z);
+	craft.model_matrix[3] = glm::vec4(newPos.x, newPos.y, newPos.z, 1);
+
+	//craft.model_matrix[3] = glm::vec4(craft_x, craft_y, craft_z, 1);
+
+	craft.m_aabb.center = m_craft_position;
+	craft.m_aabb.min = glm::vec3(m_craft_position.x, m_craft_position.y - 10, m_craft_position.z);
+
+	craft.app_model_matrix = craft.model_matrix;
+}
+
+// OLD UPDATE geometry 
 void Renderer::UpdateGeometry(float dt)
 {
 	GeometryNode& craft = *this->m_nodes[OBJECS::CRAFT];
 
-		craft.model_matrix = glm::translate(glm::mat4(1.f), glm::vec3(craft_x, craft_y, craft_z));
-		craft.app_model_matrix = craft.model_matrix;
+	//craft.model_matrix = glm::translate(glm::mat4(1.f) , glm::vec3(0 , 0 , 0));
+
+	//craft.model_matrix = glm::translate(glm::mat4(1.f), glm::vec3(m_camera_position.x * 100, (m_camera_position.y * 100), (m_camera_position.z * 100)));
+	//craft.model_matrix[3] = glm::vec4(m_camera_position.x, m_camera_position.y, m_camera_position.z, 1);
+	//craft.m_aabb.center = m_camera_position + 1000;
+	//craft.m_aabb.min = glm::vec3(m_camera_position.x, m_camera_position.y - 2, m_camera_position.z);
+
+	craft.app_model_matrix = craft.model_matrix;
 
 }
 		
-	void Renderer::UpdateCamera(float dt)
-	{
-		GeometryNode& craft = *this->m_nodes[OBJECS::CRAFT];
+void Renderer::StaticCamera(float dt)
+{
+	GeometryNode& craft = *this->m_nodes[OBJECS::CRAFT];
 
-		this->m_camera_position = glm::vec3(craft_x * 0.02, (craft_y * 0.02) + 0.5, (craft_z * 0.02) + 1.5);
-		this->m_camera_target_position = glm::vec3(craft_x * 0.02, craft_y * 0.02, craft_z * 0.02);
-		this->m_camera_up_vector = glm::vec3(0, 1, 0);
-		this->m_camera_look_angle_destination = m_craft_look_angle_destination;
+	this->m_camera_position = glm::vec3(m_craft_position.x * 0.02, (m_craft_position.y * 0.02) + 0.5, (m_craft_position.z * 0.02) + 1.5);
+	this->m_camera_target_position = glm::vec3(m_craft_position.x * 0.02, m_craft_position.y * 0.02, m_craft_position.z * 0.02);
+	this->m_camera_up_vector = glm::vec3(0, 1, 0);
+	// this->m_camera_look_angle_destination = m_craft_look_angle_destination;
 
-		this->m_view_matrix = glm::lookAt(
-			this->m_camera_position,
-			this->m_camera_target_position,
-			m_camera_up_vector);
+	this->m_view_matrix = glm::lookAt(
+		this->m_camera_position,
+		this->m_camera_target_position,
+		m_camera_up_vector);
 
-		this->m_projection_matrix = glm::perspective(
-			glm::radians(45.f),
-			this->m_screen_width / (float)this->m_screen_height,
-			0.1f, 100.f);
+	this->m_projection_matrix = glm::perspective(
+		glm::radians(45.f),
+		this->m_screen_width / (float)this->m_screen_height,
+		0.1f, 100.f);
 
-	}
+}
 
-void Renderer::Tryout(float dt) 
+//OLD UPDATE Camera
+void Renderer::UpdateCamera(float dt)
 {
 	glm::vec3 direction = glm::normalize(m_camera_target_position - m_camera_position);
 
-	m_camera_position = m_camera_position + (craft_x * 5.f * dt) * direction;
-	m_camera_target_position = m_camera_target_position + (craft_x * 5.f * dt) * direction;
+	m_camera_position = m_camera_position + (m_camera_movement.x * 5.f * dt) * direction;
+	m_camera_target_position = m_camera_target_position + (m_camera_movement.x * 5.f * dt) * direction;
 
 	glm::vec3 right = glm::normalize(glm::cross(direction, m_camera_up_vector));
 
@@ -257,40 +318,12 @@ void Renderer::Tryout(float dt)
 	direction = rotation * glm::vec4(direction, 0.f);
 	m_camera_target_position = m_camera_position + direction * glm::distance(m_camera_position, m_camera_target_position);
 
+	craft_x = m_camera_position.x;
+	craft_y = m_camera_position.y;
+	craft_z = m_camera_position.z;
+
 	m_view_matrix = glm::lookAt(m_camera_position, m_camera_target_position, m_camera_up_vector);
 }
-
-void Renderer::UpdateCraft(float dt)
-{
-	GeometryNode& craft = *this->m_nodes[OBJECS::CRAFT];
-
-	glm::vec3 direction = glm::normalize(m_craft_target_position - m_craft_position);
-
-	m_craft_position = m_craft_position + (m_craft_movement.x * 5.f * dt) * direction;
-	m_craft_target_position = m_craft_target_position + (m_craft_movement.x * 5.f * dt) * direction;
-
-	glm::vec3 right = glm::normalize(glm::cross(direction, m_craft_up));
-
-	m_craft_position = m_craft_position + (m_craft_movement.y * 5.f * dt) * right;
-	m_craft_target_position = m_craft_target_position + (m_craft_movement.y * 5.f * dt) * right;
-
-	float speed = glm::pi<float>() * 20.;
-
-	glm::mat4 rotation = glm::rotate(glm::mat4(1.f), m_camera_look_angle_destination.y * speed, right);
-	rotation *= glm::rotate(glm::mat4(1.f), m_craft_look_angle_destination.x * speed, m_craft_up);
-	m_craft_look_angle_destination = glm::vec2(0.f);
-
-	direction = rotation * glm::vec4(direction, 0.f);
-	m_craft_target_position = m_craft_position + direction * glm::distance(m_craft_position, m_craft_target_position);
-
-	craft.model_matrix = glm::translate(glm::mat4(1.f), m_craft_position);
-	craft.app_model_matrix = craft.model_matrix;
-
-	//craft.app_model_matrix = glm::lookAt(m_craft_position, m_craft_target_position, m_craft_up);
-
-	//m_view_matrix = glm::lookAt(m_craft_position, m_craft_target_position, m_craft_up);
-		//m_projection_matrix = m_view_matrix;
-	}
 
 // HELPERS
 bool Renderer::ResizeBuffers(int width, int height)
@@ -442,6 +475,7 @@ void Renderer::RenderGeometry()
 	glBindTexture(GL_TEXTURE_2D, m_light.GetShadowMapDepthTexture());
 
 	RenderStaticGeometry();
+	RenderCollidableGeometry();
 
 	m_geometry_program.Unbind();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -455,6 +489,49 @@ void Renderer::RenderStaticGeometry()
 
 	for (auto& node : this->m_nodes)
 	{
+		glBindVertexArray(node->m_vao);
+
+		m_geometry_program.loadMat4("uniform_projection_matrix", proj * node->app_model_matrix);
+		m_geometry_program.loadMat4("uniform_normal_matrix", glm::transpose(glm::inverse(m_world_matrix * node->app_model_matrix)));
+		m_geometry_program.loadMat4("uniform_world_matrix", m_world_matrix * node->app_model_matrix);
+
+		for (int j = 0; j < node->parts.size(); ++j)
+		{
+			m_geometry_program.loadVec3("uniform_diffuse", node->parts[j].diffuse);
+			m_geometry_program.loadVec3("uniform_ambient", node->parts[j].ambient);
+			m_geometry_program.loadVec3("uniform_specular", node->parts[j].specular);
+			m_geometry_program.loadFloat("uniform_shininess", node->parts[j].shininess);
+			m_geometry_program.loadInt("uniform_has_tex_diffuse", (node->parts[j].diffuse_textureID > 0) ? 1 : 0);
+			m_geometry_program.loadInt("uniform_has_tex_normal", (node->parts[j].bump_textureID > 0 || node->parts[j].normal_textureID > 0) ? 1 : 0);
+			m_geometry_program.loadInt("uniform_is_tex_bumb", (node->parts[j].bump_textureID > 0) ? 1 : 0);
+
+			glActiveTexture(GL_TEXTURE0);
+			m_geometry_program.loadInt("uniform_tex_diffuse", 0);
+			glBindTexture(GL_TEXTURE_2D, node->parts[j].diffuse_textureID);
+
+			glActiveTexture(GL_TEXTURE1);
+			m_geometry_program.loadInt("uniform_tex_normal", 1);
+			glBindTexture(GL_TEXTURE_2D, node->parts[j].bump_textureID > 0 ?
+				node->parts[j].bump_textureID : node->parts[j].normal_textureID);
+
+			glDrawArrays(GL_TRIANGLES, node->parts[j].start_offset, node->parts[j].count);
+		}
+
+		glBindVertexArray(0);
+	}
+}
+
+void Renderer::RenderCollidableGeometry()
+{
+	glm::mat4 proj = m_projection_matrix * m_view_matrix * m_world_matrix;
+
+	glm::vec3 camera_dir = normalize(m_camera_target_position - m_camera_position);
+	float_t isectT = 0.f;
+
+	for (auto& node : this->m_collidables_nodes)
+	{
+		if (node->intersectRay(m_camera_position, camera_dir, m_world_matrix, isectT)) continue;
+
 		glBindVertexArray(node->m_vao);
 
 		m_geometry_program.loadMat4("uniform_projection_matrix", proj * node->app_model_matrix);
@@ -542,25 +619,35 @@ void Renderer::CameraLook(glm::vec2 lookDir)
 // CRAFT FUNCTIONS
 void Renderer::CraftMoveForward(bool enable)
 {
-	craft_z = (enable) ? craft_z - speedBias : 0;
+	m_craft_position.z = (enable) ? m_craft_position.z - speedBias : 0;
 }
 
 void Renderer::CraftMoveBackward(bool enable)
 {
-	craft_z = (enable) ? craft_z + speedBias : 0;
+	m_craft_position.z = (enable) ? m_craft_position.z + speedBias : 0;
 }
 
 void Renderer::CraftMoveLeft(bool enable)
 {
-	craft_x = (enable) ? craft_x - speedBias : 0;
+	m_craft_position.x = (enable) ? m_craft_position.x - speedBias : 0;
 }
 
 void Renderer::CraftMoveRight(bool enable)
 {
-	craft_x = (enable) ? craft_x + speedBias : 0;
+	m_craft_position.x = (enable) ? m_craft_position.x + speedBias : 0;
 }
 
 void Renderer::CraftLook(glm::vec2 lookDir)
 {
+
 	m_craft_look_angle_destination = lookDir;
+
+	m_craft_turnRight = m_craft_look_angle_destination.x < 0.f ? m_craft_look_angle_destination.x : 0; 
+	
+	m_craft_turnLeft = m_craft_look_angle_destination.x > 0.f ? m_craft_look_angle_destination.x : 0;
+
+	m_craft_turnUp = m_craft_look_angle_destination.y < 0.f ? m_craft_look_angle_destination.y : 0;
+
+	m_craft_turnDown = m_craft_look_angle_destination.y > 0.f ? m_craft_look_angle_destination.y : 0;
+
 }

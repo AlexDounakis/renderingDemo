@@ -1,4 +1,31 @@
 ﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(513,5): warning MSB8028: The intermediate directory (x64\Release\) contains files shared from another project (Lab3.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+  Renderer.cpp
+C:\Users\lolpr\Dounakis\renderingDemo\Source\Renderer.cpp(313,14): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\lolpr\Dounakis\renderingDemo\Source\Renderer.cpp(596,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\lolpr\Dounakis\renderingDemo\Source\Renderer.cpp(601,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\lolpr\Dounakis\renderingDemo\Source\Renderer.cpp(606,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\lolpr\Dounakis\renderingDemo\Source\Renderer.cpp(611,25): warning C4244: '=': conversion from 'int' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+  Generating code
+  47 of 1377 functions ( 3.4%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    37 functions had inline decision re-evaluated but remain unchanged
+  Finished generating code
   Lab3.vcxproj -> C:\Users\lolpr\Dounakis\renderingDemo\x64\Release\renderingDemo.exe
   copy "C:\Users\lolpr\Dounakis\renderingDemo\3rd party\bin\*.dll" "C:\Users\lolpr\Dounakis\renderingDemo\x64\Release\"
   C:\Users\lolpr\Dounakis\renderingDemo\3rd party\bin\glew32.dll
